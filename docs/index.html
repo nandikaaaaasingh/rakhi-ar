@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RakhiAR Experience</title>
+  <link href="index.css" rel="stylesheet">
+  <script defer src="./packed.js"></script>
+</head>
+<body>
+  <!-- Sender's Container -->
+  <div class="container sender-container" id="senderContainer">
+    <form id="rakhiForm" class="form-group">
+      <div class="input-wrapper">
+        <input id="sisterName" type="text" placeholder="Sister's Name" required>
+      </div>
+      <div class="input-wrapper">
+        <input id="brotherName" type="text" placeholder="Brother's Name" required>
+      </div>
+      <div class="input-wrapper">
+        <input id="email" type="email" placeholder="Email" required>
+      </div>
+      <div class="input-wrapper">
+        <input id="mobile" type="tel" placeholder="Mobile Number" required>
+      </div>
+      <div class="input-wrapper">
+        <label>
+          <input id="terms" type="checkbox" required>
+          I accept the terms and conditions.
+        </label>
+      </div>
+      <div class="button-wrapper">
+        <button type="submit" class="submit-button">Send Digital Rakhi</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Receiver's Container -->
+  <div class="container receiver-container" id="receiverContainer" style="display: none;">
+    <div class="message" id="receiverMessage">
+      <h1 id="greeting">Loading...</h1>
+      <div class="tap-to-experience">Tap to experience</div>
+    </div>
+  </div>
+
+  <!-- Camera Container -->
+  <div id="camera-container" style="display: none;">
+    <img id="captureButton" src="Images/" alt="Capture" class="capture-button">
+    <div class="overlay-message">
+      <h1 id="greeting-overlay">Loading...</h1>
+    </div>
+    <canvas id="canvas"></canvas>
+    <video id="video" style="display: none;" autoplay muted playsinline></video>
+  </div>
+  
+  
+  
+</body>
+</html>

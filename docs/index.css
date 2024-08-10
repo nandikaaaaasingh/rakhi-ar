@@ -1,0 +1,256 @@
+/* Basic reset, full height setup, and centering */
+body, html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4; /* Light grey background */
+}
+
+/* Center the form container with specific aspect ratio control */
+.container {
+  width: 100vw; /* Full width on mobile */
+  height: 100vh; /* Full height on mobile */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  background: url('Images/rakhiImage.jpg') no-repeat center center;
+  background-size: cover;
+  position: absolute;
+  top: 0;
+  opacity: 1;
+  transition: opacity 1s ease;
+}
+
+.sender-container {
+  z-index: 2;
+}
+
+.receiver-container {
+  z-index: 3;
+  display: none;
+}
+
+/* Style each form element */
+.form-group {
+  width: 56vw; /* Ensure form elements use full container width */
+  margin-bottom: 15px; /* Spacing between form fields */
+}
+
+/* Add a gap between input fields */
+.input-wrapper {
+  margin-bottom: 15px; /* Add spacing between inputs */
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"] {
+  width: 100%; /* Full width */
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* Style for scaling the checkbox */
+input[type="checkbox"] {
+  transform: scale(1); /* Adjust this value to increase or decrease the size */
+  margin-right: 10px; /* Ensure some space between checkbox and label */
+  vertical-align: middle; /* Aligns checkbox vertically with the text */
+}
+
+/* Label styling */
+label {
+  font-size: 11px; /* Adjust font size */
+  vertical-align: middle;
+}
+
+/* Submit button specific style */
+.submit-button {
+  width: max-content; /* Adjust width as needed */
+  padding: 8px 16px; /* Provides ample click area */
+  margin: 2px auto; /* Increased top margin to move the button lower */
+  display: block; /* Ensures the button is a block element */
+  background-color: #007BFF; /* Primary blue */
+  color: white;
+  border: none;
+  border-radius: 25px; /* Highly rounded edges for a pill-like appearance */
+  cursor: pointer;
+  font-size: 12px; /* Larger font size for better visibility */
+  font-weight: bold; /* Makes the text bold */
+  text-transform: uppercase; /* Converts text to uppercase */
+  letter-spacing: 1px; /* Adds spacing between letters */
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+/* Placeholder styling */
+input::placeholder {
+  color: #ccc;
+}
+
+input:focus::placeholder {
+  color: black;
+}
+
+/* Receiver message styling */
+.message {
+  position: absolute;
+  top: 5%;
+  width: 70vw;
+  text-align: center;
+  color: rgb(255, 0, 0);
+  font-size: 2vw;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.tap-to-experience {
+  position: absolute;
+  margin-top: 60vh;
+  width: 70vw;
+  text-align: center;
+  color: rgb(255, 255, 255);
+  font-size: 4vw;
+  text-shadow: 0 0 10px #000;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Camera container styling */
+#camera-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #000;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0; /* Start invisible */
+  transition: opacity 1s ease;
+  z-index: 1;
+}
+
+#canvas, #video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.overlay-message {
+  position: absolute;
+  top: 5%;
+  width: 70vw;
+  text-align: center;
+  color: white;
+  font-size: 2vw;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.capture-button {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px; /* Adjust width as needed */
+  height: 60px; /* Adjust height as needed */
+  cursor: pointer;
+  z-index: 20; /* Ensure it is on top of other elements */
+  transition: transform 0.3s;
+}
+
+.capture-button:hover {
+  transform: translateX(-50%) scale(1.1); /* Slightly enlarge on hover for effect */
+}
+
+
+/* Additional styles for very large screens */
+@media (min-width: 600px) {
+  .container {
+    width: 56.25vh; /* 9/16 of the height */
+    height: 100vh; /* Full viewport height */
+  }
+
+  .form-group {
+    width: 30vh; /* Ensure form elements use full container width */
+    margin-bottom: 15px; /* Spacing between form fields */
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"] {
+    width: 100%; /* Full width */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  input[type="checkbox"] {
+    transform: scale(1.2); /* Adjust this value to increase or decrease the size */
+    margin-right: 10px; /* Ensure some space between checkbox and label */
+    vertical-align: middle; /* Aligns checkbox vertically with the text */
+  }
+
+  /* Adjust the label alignment and size */
+  label {
+    font-size: 14px; /* Adjust font size for larger screens */
+    vertical-align: middle;
+  }
+
+  .submit-button {
+    width: max-content; /* Adjust width as needed */
+    padding: 10px 16px; /* Provides ample click area */
+    margin: 32px auto; /* Increased top margin to move the button lower */
+    display: block; /* Ensures the button is a block element */
+    background-color: #007BFF; /* Primary blue */
+    color: white;
+    border: none;
+    border-radius: 25px; /* Highly rounded edges for a pill-like appearance */
+    cursor: pointer;
+    font-size: 14px; /* Larger font size for better visibility */
+    font-weight: bold; /* Makes the text bold */
+    text-transform: uppercase; /* Converts text to uppercase */
+    letter-spacing: 1px; /* Adds spacing between letters */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+  }
+
+  .message {
+    position: absolute;
+    top: 5%;
+    width: 70%;
+    text-align: center;
+    color: rgb(255, 0, 0);
+    font-size: 1.4vw;
+    z-index: 10;
+    pointer-events: none;
+  }
+  
+  .tap-to-experience {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    color: rgb(255, 255, 255);
+    font-size: 2vw;
+    text-shadow: 0 0 10px #000;
+    pointer-events: none;
+  }
+  .overlay-message {
+    font-size: 2vw;
+  }
+}
