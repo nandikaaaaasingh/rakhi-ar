@@ -137,7 +137,21 @@ function showReceiverSide(token) {
   });
 }
 
+async function handleTap(receiverContainer, cameraContainer) {
+  try {
+    await startCameraKit();
 
+    cameraContainer.style.display = 'flex';
+    receiverContainer.style.opacity = 0;
+    cameraContainer.style.opacity = 1;
+    setTimeout(() => {
+      receiverContainer.style.display = 'none';
+    }, 1000);
+
+  } catch (error) {
+    console.error('Error initializing camera:', error);
+  }
+}
 
 function generateToken(name, email, mobile) {
   return btoa(`${name.slice(0, 3)}${mobile.slice(-4)}`);
@@ -165,6 +179,9 @@ function handleSharing(link) {
 }
 
 async function startCameraKit() {
+  const cameraContainer = document.getElementById('camera-container');
+  cameraContainer.style.opacity = 1;
+
   try {
     // Initialize the camera kit with the appropriate API token
     const cameraKit = await bootstrapCameraKit({
@@ -172,57 +189,39 @@ async function startCameraKit() {
     });
 
     // Create a new session and optionally handle higher resolution settings
-    const session = await cameraKit.createSession({});
-
-    // Append the live output directly to the body or a suitable container
-    document.body.appendChild(session.output.live);
-    session.output.live.style.position = 'fixed';
-    session.output.live.style.top = '0';
-    session.output.live.style.left = '0';
-    session.output.live.style.width = '100vw';
-    session.output.live.style.height = '100vh';
-    session.output.live.style.zIndex = '-1'; // Send it to the back
-
-    // Apply a specific lens from the lens repository if needed
-    const { lenses } = await cameraKit.lensRepository.loadLensGroups(['fdd0879f-c570-490e-9dfc-cba0f122699f']);
-    session.applyLens(lenses[0]);
-
-    // Obtain and configure the media stream for high resolution
-    let mediaStream = await navigator.mediaDevices.getUserMedia({
-      video: { width: 4096, height: 2160, facingMode: 'environment' }
+    const session = await cameraKit.createSession({
+      cameraResolution: '1080p'  // This is indicative; actual API parameters may vary
     });
 
-    const source = createMediaStreamSource(mediaStream, { cameraType: 'back' });
-    await session.setSource(source);
-    session.source.setRenderSize(window.innerWidth, window.innerHeight);
-    session.play();
+    const canvasElement = document.getElementById('canvas');
+    if (canvasElement) {
+      // Replace the existing canvas with the live output from the camera session
+      canvasElement.replaceWith(session.output.live);
 
-    // Ensure capture button is in place
-    const captureButton = document.getElementById('captureButton');
-    if (captureButton) {
-      captureButton.addEventListener('click', () => captureScreenshot(session));
+      // Apply a specific lens from the lens repository if needed
+      const { lenses } = await cameraKit.lensRepository.loadLensGroups(['fdd0879f-c570-490e-9dfc-cba0f122699f']);
+      session.applyLens(lenses[0]);
+
+      // Obtain and configure the media stream for high resolution
+      let mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 4096, height: 2160, facingMode: 'environment' }
+
+      });
+
+      const source = createMediaStreamSource(mediaStream, { cameraType: 'back' });
+      await session.setSource(source);
+      session.source.setRenderSize(window.innerWidth, window.innerHeight);
+      session.play();
+
+      // Add the event listener for the capture button here, after the session has started
+      document.getElementById('captureButton').addEventListener('click', () => captureScreenshot(session));
     } else {
-      console.error('Capture button not found');
+      console.error('Canvas element not found');
     }
   } catch (error) {
     console.error('Error initializing camera kit or session:', error);
   }
 }
-
-function handleTap() {
-  const receiverContainer = document.getElementById('receiverContainer');
-  if (receiverContainer) {
-    receiverContainer.style.opacity = 0; // Fade out effect
-    setTimeout(() => {
-      receiverContainer.style.display = 'none';
-      startCameraKit(); // Initialize camera kit after receiver container fades
-    }, 1000);
-  } else {
-    console.error('Receiver container not found');
-  }
-}
-
-
 
 function wrapText(context, text, x, y, maxWidth, lineHeight) {
   var words = text.split(' ');

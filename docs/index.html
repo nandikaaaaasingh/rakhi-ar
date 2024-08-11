@@ -42,11 +42,17 @@
     </div>
   </div>
 
-  <!-- Capture Button and Overlay Message -->
-  <img id="captureButton" src="Images/capture.png" alt="Capture" class="capture-button">
-  <div class="overlay-message">
-    <h1 id="greeting-overlay">Loading...</h1>
+  <!-- Camera Container -->
+  <div id="camera-container" style="display: none;">
+    <img id="captureButton" src="Images/capture.png" alt="Capture" class="capture-button">
+    <div class="overlay-message">
+      <h1 id="greeting-overlay">Loading...</h1>
+    </div>
+    <canvas id="canvas"></canvas>
+    <video id="video" style="display: none;" autoplay muted playsinline></video>
   </div>
-
+  
+  
+  
 </body>
 </html>
