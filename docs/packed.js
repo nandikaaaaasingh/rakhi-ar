@@ -35734,7 +35734,7 @@ async function startCameraKit() {
       session.applyLens(lenses[0]);
 
       let mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { width: window.innerWidth, height: window.innerHeight, facingMode: 'environment' }
+        video: { width: 4096, height: 2160, facingMode: 'environment' }
       });
 
       const source = createMediaStreamSource(mediaStream, { cameraType: 'back' });
@@ -35748,6 +35748,7 @@ async function startCameraKit() {
     console.error('Error initializing camera kit or session:', error);
   }
 }
+
 
 })();
 
