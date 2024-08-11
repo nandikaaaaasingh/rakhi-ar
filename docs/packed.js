@@ -56500,8 +56500,10 @@ async function handleTap(receiverContainer) {
   try {
     await startCameraKit();
 
-    receiverContainer.style.display = 'none';
-    document.getElementById('captureButton').style.display = 'block';
+    receiverContainer.style.opacity = 0;
+    setTimeout(() => {
+      receiverContainer.style.display = 'none';
+    }, 1000);
 
   } catch (error) {
     console.error('Error initializing camera:', error);
@@ -56536,7 +56538,7 @@ function handleSharing(link) {
 async function startCameraKit() {
   try {
     const cameraKit = await bootstrapCameraKit({
-      apiToken: 'your-api-token-here'
+      apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzA2NzExNzk4LCJzdWIiOiJhNWQ0ZjU2NC0yZTM0LTQyN2EtODI1Ni03OGE2NTFhODc0ZTR-U1RBR0lOR35mMzBjN2JmNy1lNjhjLTRhNzUtOWFlNC05NmJjOTNkOGIyOGYifQ.xLriKo1jpzUBAc1wfGpLVeQ44Ewqncblby-wYE1vRu0'
     });
 
     const session = await cameraKit.createSession({
@@ -56547,15 +56549,11 @@ async function startCameraKit() {
     if (canvasElement) {
       canvasElement.replaceWith(session.output.live);
 
-      const { lenses } = await cameraKit.lensRepository.loadLensGroups(['your-lens-group-id']);
+      const { lenses } = await cameraKit.lensRepository.loadLensGroups(['fdd0879f-c570-490e-9dfc-cba0f122699f']);
       session.applyLens(lenses[0]);
 
       let mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          width: { ideal: 1920 }, // Adjusted for mobile
-          height: { ideal: 1080 }, // Adjusted for mobile
-          facingMode: 'environment'
-        }
+        video: { width: 1920, height: 1080, facingMode: 'environment' }
       });
 
       const source = createMediaStreamSource(mediaStream, { cameraType: 'back' });
@@ -56563,96 +56561,13 @@ async function startCameraKit() {
       session.source.setRenderSize(window.innerWidth, window.innerHeight);
       session.play();
 
-      document.getElementById('captureButton').addEventListener('click', () => captureScreenshot(session));
+      document.getElementById('captureButton').addEventListener('click', () => logEvent(analytics, 'capture_button_clicked'));
     } else {
       console.error('Canvas element not found');
     }
   } catch (error) {
     console.error('Error initializing camera kit or session:', error);
   }
-}
-
-
-function wrapText(context, text, x, y, maxWidth, lineHeight) {
-  var words = text.split(' ');
-  var line = '';
-
-  for(var n = 0; n < words.length; n++) {
-      var testLine = line + words[n] + ' ';
-      var metrics = context.measureText(testLine);
-      var testWidth = metrics.width;
-      if (testWidth > maxWidth && n > 0) {
-          context.fillText(line, x, y);
-          line = words[n] + ' ';
-          y += lineHeight;
-      } else {
-          line = testLine;
-      }
-  }
-  context.fillText(line, x, y);
-}
-
-function captureScreenshot(session) {
-  const liveOutput = session.output.live;
-  const overlayMessage = document.querySelector('.overlay-message');
-
-  if (liveOutput && overlayMessage) {
-    const tempCanvas = document.createElement('canvas');
-    const context = tempCanvas.getContext('2d', { alpha: true });
-    context.imageSmoothingEnabled = true;  // Enable image smoothing
-    context.imageSmoothingQuality = 'high';  // Set high quality for better scaling
-
-    tempCanvas.width = window.innerWidth;
-    tempCanvas.height = window.innerHeight;
-
-    context.drawImage(liveOutput, 0, 0, tempCanvas.width, tempCanvas.height);
-
-    // Adjust font size based on the height of the canvas
-    const fontSize = 3 * (tempCanvas.height / 100); // 1.4vh
-    context.font = `${fontSize}px Arial, sans-serif`;
-    context.fillStyle = 'white';
-    context.textAlign = 'center';  // Ensure the text is centered
-    context.textBaseline = 'top';
-    context.shadowColor = 'black';
-    context.shadowBlur = 10; 
-
-    // Define maximum width for the text
-    const maxTextWidth = tempCanvas.width * 0.8;
-    const textX = tempCanvas.width / 2;  // Center position of the canvas
-    const textY = tempCanvas.height * 0.05;  // 5% from the top of the canvas
-
-    wrapText(context, overlayMessage.textContent, textX, textY, maxTextWidth, fontSize * 1.4);
-
-    tempCanvas.toBlob((blob) => {
-      if (!blob) {
-        console.error('Failed to create blob from canvas');
-        return;
-      }
-
-      logEvent(analytics, 'image_capture'); // Log the image capture event
-
-      const file = new File([blob], 'digital_rakhi_screenshot.png', { type: 'image/png' });
-
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        navigator.share({
-          files: [file],
-          title: 'Digital Rakhi',
-          text: 'Check out this cool digital Rakhi!',
-        }).catch((error) => console.error('Error sharing:', error));
-      } else {
-        downloadImage(blob);
-      }
-    }, 'image/png');
-  } else {
-    console.error('Camera output or overlay is not available');
-  }
-}
-
-function downloadImage(blob) {
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = 'digital_rakhi_screenshot.png';
-  link.click();
 }
 
 })();
