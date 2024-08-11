@@ -1,12 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RakhiAR Experience</title>
   <link href="index.css" rel="stylesheet">
   <script defer src="./packed.js"></script>
 </head>
 <body>
+  <!-- Form for input -->
+  <form id="rakhiForm">
+    <input id="sisterName" type="text" placeholder="Sister's Name" required>
+    <input id="brotherName" type="text" placeholder="Brother's Name" required>
+    <input id="email" type="email" placeholder="Email" required>
+    <input id="mobile" type="tel" placeholder="Mobile Number" required>
+    <label>
+      <input id="terms" type="checkbox" required>
+      I accept the terms and conditions.
+    </label>
+    <button type="submit">Send Digital Rakhi</button>
+  </form>
+
   <!-- Camera Session -->
   <canvas id="canvas"></canvas>
-  <video id="video" style="display: none;" autoplay muted playsinline></video></body>
+  <video id="video" style="display: none;" autoplay muted playsinline></video>
+</body>
 </html>
