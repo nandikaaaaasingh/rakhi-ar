@@ -56413,9 +56413,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// The rest of your main.js code should follow here...
-
-
 function setupForm() {
   const form = document.getElementById('rakhiForm');
 
@@ -56473,7 +56470,6 @@ function setupForm() {
 function showReceiverSide(token) {
   const senderContainer = document.getElementById('senderContainer');
   const receiverContainer = document.getElementById('receiverContainer');
-  const cameraContainer = document.getElementById('camera-container');
 
   senderContainer.style.display = 'none';
   receiverContainer.style.display = 'flex';
@@ -56487,7 +56483,7 @@ function showReceiverSide(token) {
         document.getElementById('greeting').innerText = `${rakhiData.sisterName} sent this Digital Rakhi to ${rakhiData.brotherName} with love`;
         document.getElementById('greeting-overlay').innerText = `${rakhiData.sisterName} sent this Digital Rakhi to ${rakhiData.brotherName} with love`;
 
-        receiverContainer.addEventListener('click', () => handleTap(receiverContainer, cameraContainer));
+        receiverContainer.addEventListener('click', () => handleTap(receiverContainer));
       } else {
         document.getElementById('greeting').innerText = 'No Rakhi information found.';
         document.getElementById('greeting-overlay').innerText = 'No Rakhi information found.';
@@ -56500,16 +56496,12 @@ function showReceiverSide(token) {
   });
 }
 
-async function handleTap(receiverContainer, cameraContainer) {
+async function handleTap(receiverContainer) {
   try {
     await startCameraKit();
 
-    cameraContainer.style.display = 'flex';
-    receiverContainer.style.opacity = 0;
-    cameraContainer.style.opacity = 1;
-    setTimeout(() => {
-      receiverContainer.style.display = 'none';
-    }, 1000);
+    receiverContainer.style.display = 'none';
+    document.getElementById('captureButton').style.display = 'block';
 
   } catch (error) {
     console.error('Error initializing camera:', error);
@@ -56542,9 +56534,6 @@ function handleSharing(link) {
 }
 
 async function startCameraKit() {
-  const cameraContainer = document.getElementById('camera-container');
-  cameraContainer.style.opacity = 1;
-
   try {
     // Initialize the camera kit with the appropriate API token
     const cameraKit = await bootstrapCameraKit({
@@ -56568,7 +56557,6 @@ async function startCameraKit() {
       // Obtain and configure the media stream for high resolution
       let mediaStream = await navigator.mediaDevices.getUserMedia({
         video: { width: 4096, height: 2160, facingMode: 'environment' }
-
       });
 
       const source = createMediaStreamSource(mediaStream, { cameraType: 'back' });
@@ -56606,18 +56594,17 @@ function wrapText(context, text, x, y, maxWidth, lineHeight) {
 }
 
 function captureScreenshot(session) {
-  const cameraContainer = document.getElementById('camera-container');
   const liveOutput = session.output.live;
   const overlayMessage = document.querySelector('.overlay-message');
 
-  if (liveOutput && overlayMessage && cameraContainer) {
+  if (liveOutput && overlayMessage) {
     const tempCanvas = document.createElement('canvas');
     const context = tempCanvas.getContext('2d', { alpha: true });
     context.imageSmoothingEnabled = true;  // Enable image smoothing
     context.imageSmoothingQuality = 'high';  // Set high quality for better scaling
 
-    tempCanvas.width = cameraContainer.clientWidth;
-    tempCanvas.height = cameraContainer.clientHeight;
+    tempCanvas.width = window.innerWidth;
+    tempCanvas.height = window.innerHeight;
 
     context.drawImage(liveOutput, 0, 0, tempCanvas.width, tempCanvas.height);
 
@@ -56630,43 +56617,43 @@ function captureScreenshot(session) {
     context.shadowColor = 'black';
     context.shadowBlur = 10; 
 
-  // Define maximum width for the text
-  const maxTextWidth = tempCanvas.width * 0.8;
-  const textX = tempCanvas.width / 2;  // Center position of the canvas
-  const textY = tempCanvas.height * 0.05;  // 5% from the top of the canvas
+    // Define maximum width for the text
+    const maxTextWidth = tempCanvas.width * 0.8;
+    const textX = tempCanvas.width / 2;  // Center position of the canvas
+    const textY = tempCanvas.height * 0.05;  // 5% from the top of the canvas
 
-  wrapText(context, overlayMessage.textContent, textX, textY, maxTextWidth, fontSize * 1.4);
+    wrapText(context, overlayMessage.textContent, textX, textY, maxTextWidth, fontSize * 1.4);
 
-  tempCanvas.toBlob((blob) => {
-    if (!blob) {
-      console.error('Failed to create blob from canvas');
-      return;
-    }
+    tempCanvas.toBlob((blob) => {
+      if (!blob) {
+        console.error('Failed to create blob from canvas');
+        return;
+      }
 
-    logEvent(analytics, 'image_capture'); // Log the image capture event
+      logEvent(analytics, 'image_capture'); // Log the image capture event
 
-    const file = new File([blob], 'digital_rakhi_screenshot.png', { type: 'image/png' });
+      const file = new File([blob], 'digital_rakhi_screenshot.png', { type: 'image/png' });
 
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      navigator.share({
-        files: [file],
-        title: 'Digital Rakhi',
-        text: 'Check out this cool digital Rakhi!',
-      }).catch((error) => console.error('Error sharing:', error));
-    } else {
-      downloadImage(blob);
-    }
-  }, 'image/png');
-} else {
-  console.error('Camera output or overlay is not available');
-}
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({
+          files: [file],
+          title: 'Digital Rakhi',
+          text: 'Check out this cool digital Rakhi!',
+        }).catch((error) => console.error('Error sharing:', error));
+      } else {
+        downloadImage(blob);
+      }
+    }, 'image/png');
+  } else {
+    console.error('Camera output or overlay is not available');
+  }
 }
 
 function downloadImage(blob) {
-const link = document.createElement('a');
-link.href = URL.createObjectURL(blob);
-link.download = 'digital_rakhi_screenshot.png';
-link.click();
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'digital_rakhi_screenshot.png';
+  link.click();
 }
 
 })();
