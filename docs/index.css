@@ -1,18 +1,24 @@
-/* Basic reset */
-body, html {
-  height: 100%;
+
+body {
   margin: 0;
   padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #000; /* Black background for better contrast */
+  overflow: hidden;
+
 }
 
-/* Camera session styling */
+#output-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
 #canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
-  object-fit: cover;
-  background: #000;
+  z-index: 1; /* Ensures canvas is behind the form */
 }
