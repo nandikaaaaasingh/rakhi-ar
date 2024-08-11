@@ -46957,7 +46957,7 @@ async function startCameraKit() {
       let mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'environment',
-          width: { ideal: 1080 },
+          width: { ideal: 1920 },
           height: { ideal: 1920 }
         }
       });
@@ -47013,7 +47013,7 @@ function captureScreenshot(session) {
     context.drawImage(liveOutput, 0, 0, tempCanvas.width, tempCanvas.height);
 
     // Adjust font size based on the height of the canvas
-    const fontSize = 1.4 * (tempCanvas.height / 100); // 1.4vh
+    const fontSize = 3 * (tempCanvas.height / 100); // 1.4vh
     context.font = `${fontSize}px Arial, sans-serif`;
     context.fillStyle = 'white';
     context.textAlign = 'center';  // Ensure the text is centered
