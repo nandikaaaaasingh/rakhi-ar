@@ -190,7 +190,7 @@ async function startCameraKit() {
 
     // Create a new session and optionally handle higher resolution settings
     const session = await cameraKit.createSession({
-      cameraResolution: '1080p'  // This is indicative; actual API parameters may vary
+      cameraResolution: '3840p'  // This is indicative; actual API parameters may vary
     });
 
     const canvasElement = document.getElementById('canvas');
@@ -206,8 +206,8 @@ async function startCameraKit() {
       let mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'environment',
-          width: { ideal: 1920 },
-          height: { ideal: 1080 }
+          width: { ideal: 1080 },
+          height: { ideal: 1920 }
         }
       });
 
