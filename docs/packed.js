@@ -56535,28 +56535,27 @@ function handleSharing(link) {
 
 async function startCameraKit() {
   try {
-    // Initialize the camera kit with the appropriate API token
     const cameraKit = await bootstrapCameraKit({
-      apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzA2NzExNzk4LCJzdWIiOiJhNWQ0ZjU2NC0yZTM0LTQyN2EtODI1Ni03OGE2NTFhODc0ZTR-U1RBR0lOR35mMzBjN2JmNy1lNjhjLTRhNzUtOWFlNC05NmJjOTNkOGIyOGYifQ.xLriKo1jpzUBAc1wfGpLVeQ44Ewqncblby-wYE1vRu0'
+      apiToken: 'your-api-token-here'
     });
 
-    // Create a new session and optionally handle higher resolution settings
     const session = await cameraKit.createSession({
-      cameraResolution: '1080p'  // This is indicative; actual API parameters may vary
+      cameraResolution: '1080p'
     });
 
     const canvasElement = document.getElementById('canvas');
     if (canvasElement) {
-      // Replace the existing canvas with the live output from the camera session
       canvasElement.replaceWith(session.output.live);
 
-      // Apply a specific lens from the lens repository if needed
-      const { lenses } = await cameraKit.lensRepository.loadLensGroups(['fdd0879f-c570-490e-9dfc-cba0f122699f']);
+      const { lenses } = await cameraKit.lensRepository.loadLensGroups(['your-lens-group-id']);
       session.applyLens(lenses[0]);
 
-      // Obtain and configure the media stream for high resolution
       let mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { width: 4096, height: 2160, facingMode: 'environment' }
+        video: {
+          width: { ideal: 1920 }, // Adjusted for mobile
+          height: { ideal: 1080 }, // Adjusted for mobile
+          facingMode: 'environment'
+        }
       });
 
       const source = createMediaStreamSource(mediaStream, { cameraType: 'back' });
@@ -56564,7 +56563,6 @@ async function startCameraKit() {
       session.source.setRenderSize(window.innerWidth, window.innerHeight);
       session.play();
 
-      // Add the event listener for the capture button here, after the session has started
       document.getElementById('captureButton').addEventListener('click', () => captureScreenshot(session));
     } else {
       console.error('Canvas element not found');
@@ -56573,6 +56571,7 @@ async function startCameraKit() {
     console.error('Error initializing camera kit or session:', error);
   }
 }
+
 
 function wrapText(context, text, x, y, maxWidth, lineHeight) {
   var words = text.split(' ');
