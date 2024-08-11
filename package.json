@@ -16,7 +16,7 @@
     "webpack-cli": "^5.1.1"
   },
   "dependencies": {
-    "@snap/camera-kit": "^0.12.0",
+    "@snap/camera-kit": "^0.15.0",
     "firebase": "^10.12.5",
     "jquery": "^3.7.0",
     "webpack-dashboard": "^3.3.8",
