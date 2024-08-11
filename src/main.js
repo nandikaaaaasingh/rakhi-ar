@@ -6,11 +6,14 @@ import {
 document.addEventListener('DOMContentLoaded', function() {
   const urlParams = new URLSearchParams(window.location.search);
   const token = urlParams.get('token');
+  const form = document.getElementById('rakhiForm');
+  const canvas = document.getElementById('canvas');
 
   if (token) {
+    form.style.display = 'none';
     startCameraKit();
   } else {
-    setupForm();
+    form.style.display = 'block';
   }
 });
 
