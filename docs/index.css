@@ -1,9 +1,7 @@
-
 body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-
 }
 
 #output-canvas {
@@ -20,5 +18,7 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 1; /* Ensures canvas is behind the form */
 }
+
+
+

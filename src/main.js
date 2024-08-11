@@ -23,7 +23,7 @@ async function startCameraKit() {
       session.applyLens(lenses[0]);
 
       let mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { width: window.innerWidth, height: window.innerHeight, facingMode: 'environment' }
+        video: { width: 2160, height: 4096, facingMode: 'environment' }
       });
 
       const source = createMediaStreamSource(mediaStream, { cameraType: 'back' });
