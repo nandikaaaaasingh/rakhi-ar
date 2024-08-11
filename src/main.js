@@ -257,7 +257,7 @@ if (liveOutput && overlayMessage && cameraContainer) {
   context.textAlign = 'center';  // Ensure the text is centered
   context.textBaseline = 'top';
   context.shadowColor = 'black';
-  context.shadowBlur = 10;
+  context.shadowBlur = 10; 
 
   // Define maximum width for the text
   const maxTextWidth = tempCanvas.width * 0.8;
