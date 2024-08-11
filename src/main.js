@@ -183,24 +183,31 @@ async function startCameraKit() {
   cameraContainer.style.opacity = 1;
 
   try {
+    // Initialize the camera kit with the appropriate API token
     const cameraKit = await bootstrapCameraKit({
       apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzA2NzExNzk4LCJzdWIiOiJhNWQ0ZjU2NC0yZTM0LTQyN2EtODI1Ni03OGE2NTFhODc0ZTR-U1RBR0lOR35mMzBjN2JmNy1lNjhjLTRhNzUtOWFlNC05NmJjOTNkOGIyOGYifQ.xLriKo1jpzUBAc1wfGpLVeQ44Ewqncblby-wYE1vRu0'
     });
 
-    const session = await cameraKit.createSession();
+    // Create a new session and optionally handle higher resolution settings
+    const session = await cameraKit.createSession({
+      cameraResolution: '1080p'  // This is indicative; actual API parameters may vary
+    });
+
     const canvasElement = document.getElementById('canvas');
     if (canvasElement) {
+      // Replace the existing canvas with the live output from the camera session
       canvasElement.replaceWith(session.output.live);
-      session.output.live.style.transform = 'scaleX(1)';
 
+      // Apply a specific lens from the lens repository if needed
       const { lenses } = await cameraKit.lensRepository.loadLensGroups(['fdd0879f-c570-490e-9dfc-cba0f122699f']);
       session.applyLens(lenses[0]);
 
+      // Obtain and configure the media stream for high resolution
       let mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'environment',
-          width: { ideal: window.innerWidth, max: 1920 },
-          height: { ideal: window.innerHeight, max: 1080 }
+          width: { ideal: 1920 },
+          height: { ideal: 1080 }
         }
       });
 
@@ -209,6 +216,7 @@ async function startCameraKit() {
       session.source.setRenderSize(window.innerWidth, window.innerHeight);
       session.play();
 
+      // Add the event listener for the capture button here, after the session has started
       document.getElementById('captureButton').addEventListener('click', () => captureScreenshot(session));
     } else {
       console.error('Canvas element not found');
@@ -238,26 +246,29 @@ function wrapText(context, text, x, y, maxWidth, lineHeight) {
 }
 
 function captureScreenshot(session) {
-const cameraContainer = document.getElementById('camera-container');
-const liveOutput = session.output.live;
-const overlayMessage = document.querySelector('.overlay-message');
+  const cameraContainer = document.getElementById('camera-container');
+  const liveOutput = session.output.live;
+  const overlayMessage = document.querySelector('.overlay-message');
 
-if (liveOutput && overlayMessage && cameraContainer) {
-  const tempCanvas = document.createElement('canvas');
-  const context = tempCanvas.getContext('2d');
-  tempCanvas.width = cameraContainer.clientWidth;
-  tempCanvas.height = cameraContainer.clientHeight;
+  if (liveOutput && overlayMessage && cameraContainer) {
+    const tempCanvas = document.createElement('canvas');
+    const context = tempCanvas.getContext('2d', { alpha: true });
+    context.imageSmoothingEnabled = true;  // Enable image smoothing
+    context.imageSmoothingQuality = 'high';  // Set high quality for better scaling
 
-  context.drawImage(liveOutput, 0, 0, tempCanvas.width, tempCanvas.height);
+    tempCanvas.width = cameraContainer.clientWidth;
+    tempCanvas.height = cameraContainer.clientHeight;
 
-  // Adjust font size based on the height of the canvas
-  const fontSize = 3 * (tempCanvas.height / 100); // 1.4vh
-  context.font = `${fontSize}px Arial, sans-serif`;
-  context.fillStyle = 'white';
-  context.textAlign = 'center';  // Ensure the text is centered
-  context.textBaseline = 'top';
-  context.shadowColor = 'black';
-  context.shadowBlur = 10; 
+    context.drawImage(liveOutput, 0, 0, tempCanvas.width, tempCanvas.height);
+
+    // Adjust font size based on the height of the canvas
+    const fontSize = 1.4 * (tempCanvas.height / 100); // 1.4vh
+    context.font = `${fontSize}px Arial, sans-serif`;
+    context.fillStyle = 'white';
+    context.textAlign = 'center';  // Ensure the text is centered
+    context.textBaseline = 'top';
+    context.shadowColor = 'black';
+    context.shadowBlur = 10; 
 
   // Define maximum width for the text
   const maxTextWidth = tempCanvas.width * 0.8;
