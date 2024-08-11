@@ -212,14 +212,6 @@ input:focus::placeholder {
     font-size: 14px; /* Adjust font size for larger screens */
     vertical-align: middle;
   }
-  #canvas, #video {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    object-fit: cover;
-  }
 
   .submit-button {
     width: max-content; /* Adjust width as needed */
