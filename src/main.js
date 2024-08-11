@@ -259,9 +259,7 @@ function captureScreenshot(session) {
   if (liveOutput && overlayMessage && cameraContainer) {
     const tempCanvas = document.createElement('canvas');
     const context = tempCanvas.getContext('2d', { alpha: true });
-    context.imageSmoothingEnabled = true;  // Enable image smoothing
-    context.imageSmoothingQuality = 'high';  // Set high quality for better scaling
-
+    
     tempCanvas.width = cameraContainer.clientWidth;
     tempCanvas.height = cameraContainer.clientHeight;
 
