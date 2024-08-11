@@ -188,36 +188,28 @@ async function startCameraKit() {
       apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzA2NzExNzk4LCJzdWIiOiJhNWQ0ZjU2NC0yZTM0LTQyN2EtODI1Ni03OGE2NTFhODc0ZTR-U1RBR0lOR35mMzBjN2JmNy1lNjhjLTRhNzUtOWFlNC05NmJjOTNkOGIyOGYifQ.xLriKo1jpzUBAc1wfGpLVeQ44Ewqncblby-wYE1vRu0'
     });
 
-    // Configure the ideal camera resolution settings
-    const idealResolution = { width: 1920, height: 1080 }; // Set to common 1080p; adapt as needed
-    let constraints = {
-      video: {
-        width: idealResolution.width,
-        height: idealResolution.height,
-        facingMode: 'environment'
-      }
-    };
+    // Create a new session and optionally handle higher resolution settings
+    const session = await cameraKit.createSession({
+    });
 
-    // Obtain and configure the media stream for high resolution
-    let mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
-
-    // Create a new session and handle the video stream
-    const session = await cameraKit.createSession();
-    const source = createMediaStreamSource(mediaStream, { cameraType: 'back' });
-    await session.setSource(source);
-
-    // Ensure the rendering respects the aspect ratio
-    session.source.setRenderSize(window.innerWidth, window.innerHeight);
-
-    // Replace the existing canvas with the live output from the camera session
     const canvasElement = document.getElementById('canvas');
     if (canvasElement) {
+      // Replace the existing canvas with the live output from the camera session
       canvasElement.replaceWith(session.output.live);
 
       // Apply a specific lens from the lens repository if needed
       const { lenses } = await cameraKit.lensRepository.loadLensGroups(['fdd0879f-c570-490e-9dfc-cba0f122699f']);
       session.applyLens(lenses[0]);
 
+      // Obtain and configure the media stream for high resolution
+      let mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: { width: innerWidth, height: innerHeight, facingMode: 'environment' }
+
+      });
+
+      const source = createMediaStreamSource(mediaStream, { cameraType: 'back' });
+      await session.setSource(source);
+      session.source.setRenderSize(window.innerWidth, window.innerHeight);
       session.play();
 
       // Add the event listener for the capture button here, after the session has started
@@ -229,8 +221,6 @@ async function startCameraKit() {
     console.error('Error initializing camera kit or session:', error);
   }
 }
-
-
 
 function wrapText(context, text, x, y, maxWidth, lineHeight) {
   var words = text.split(' ');
@@ -259,7 +249,9 @@ function captureScreenshot(session) {
   if (liveOutput && overlayMessage && cameraContainer) {
     const tempCanvas = document.createElement('canvas');
     const context = tempCanvas.getContext('2d', { alpha: true });
-    
+    context.imageSmoothingEnabled = true;  // Enable image smoothing
+    context.imageSmoothingQuality = 'high';  // Set high quality for better scaling
+
     tempCanvas.width = cameraContainer.clientWidth;
     tempCanvas.height = cameraContainer.clientHeight;
 
