@@ -1,129 +1,75 @@
-/* Basic reset, full height setup, and centering */
-body, html {
-  height: 100%;
+body {
   margin: 0;
   padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4; /* Light grey background */
+  overflow: hidden;
 }
 
-/* Main container styling */
-.container {
-  width: 100vw; /* Full width */
-  height: 100vh; /* Full height */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: url('Images/rakhiImage.jpg') no-repeat center center;
-  background-size: cover;
+#output-canvas {
   position: absolute;
   top: 0;
-  opacity: 1;
-  transition: opacity 1s ease;
-  z-index: 1;
-}
-
-/* Form styling */
-.form-group {
-  width: 56vw;
-  margin-bottom: 15px;
-}
-
-.input-wrapper {
-  margin-bottom: 15px;
-}
-
-input[type="text"],
-input[type="email"],
-input[type="tel"] {
+  left: 0;
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
+  height: 100%;
 }
 
-/* Checkbox styling */
-input[type="checkbox"] {
-  transform: scale(1);
-  margin-right: 10px;
-  vertical-align: middle;
+#canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
 }
 
-/* Label styling */
-label {
-  font-size: 11px;
-  vertical-align: middle;
+.button-class {
+  z-index: 999;
+  position: absolute;
+
+  height: 50px;
+  width: 100px;
+  font-size: 1.5em;
 }
 
-/* Submit button styling */
-.submit-button {
-  width: max-content;
-  padding: 8px 16px;
-  margin: 2px auto;
-  display: block;
-  background-color: #007BFF;
-  color: white;
+.select-menu {
+  position: absolute;
+  top: 20px;
+  z-index: 100;
+  height: 50px;
+}
+
+.select-menu > select {
+  max-width: 200px;
+  height: 100%;
+  font-size: 1.5em;
+}
+
+#copyButton {
+  position: fixed;
+  bottom: 25%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ffc20e;
+  color: #ff0000;
   border: none;
   border-radius: 25px;
+  padding: 20px 80px;
   cursor: pointer;
-  font-size: 12px;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  transition: background-color 0.3s;
+  display: none; /* Initially hidden */
+  font-size:60px; /* Adjust font size for desktop */
 }
 
-.submit-button:hover {
-  background-color: #0056b3;
+#copyButton2 {
+position: fixed;
+bottom: 40%;
+left: 50%;
+transform: translateX(-50%);
+background-color: #ff0e0e;
+color: #ffffff;
+border: none;
+border-radius: 100px;
+padding: 20px 80px;
+cursor: pointer;
+display: none; /* Initially hidden */
+font-size:80px; /* Adjust font size for desktop */
 }
 
-/* Placeholder styling */
-input::placeholder {
-  color: #ccc;
-}
 
-input:focus::placeholder {
-  color: black;
-}
-
-/* Responsive design for larger screens */
-@media (min-width: 600px) {
-  .container {
-    width: 56.25vh;
-    height: 100vh;
-  }
-
-  .form-group {
-    width: 30vh;
-  }
-
-  input[type="text"],
-  input[type="email"],
-  input[type="tel"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-  }
-  
-  input[type="checkbox"] {
-    transform: scale(1.2);
-    margin-right: 10px;
-    vertical-align: middle;
-  }
-
-  label {
-    font-size: 14px;
-    vertical-align: middle;
-  }
-
-  .submit-button {
-    padding: 10px 16px;
-    font-size: 14px;
-  }
-}
