@@ -15,9 +15,8 @@ const firebaseConfig = {
   storageBucket: "digitalrakhi-f8060.appspot.com",
   messagingSenderId: "360526523502",
   appId: "1:360526523502:web:3e1af0fd17e9bb1ca5ca7f",
-  measurementId: "G-FPJ5LHJEVS" // Ensure this is correct
+  measurementId: "G-FPJ5LHJEVS"
 };
-
 
 // Initialize Firebase and Analytics
 const app = initializeApp(firebaseConfig);
@@ -28,28 +27,31 @@ document.addEventListener('DOMContentLoaded', function() {
   const urlParams = new URLSearchParams(window.location.search);
   const token = urlParams.get('token');
 
+  let pageSessionStart = Date.now(); // Track session start for both main and token pages
+
   if (token) {
     logEvent(analytics, 'token_page_visit', { token });
-    let tokenPageSessionStart = Date.now();
 
     window.addEventListener('beforeunload', () => {
-      const sessionDuration = Date.now() - tokenPageSessionStart;
-      logEvent(analytics, 'token_page_session', { duration: sessionDuration });
+      const sessionDuration = Date.now() - pageSessionStart;
+      logEvent(analytics, 'token_page_session', { duration_ms: sessionDuration });
     });
 
     showReceiverSide(token);
   } else {
     logEvent(analytics, 'main_page_visit');
-    let mainPageSessionStart = Date.now();
 
     window.addEventListener('beforeunload', () => {
-      const sessionDuration = Date.now() - mainPageSessionStart;
-      logEvent(analytics, 'main_page_session', { duration: sessionDuration });
+      const sessionDuration = Date.now() - pageSessionStart;
+      logEvent(analytics, 'main_page_session', { duration_ms: sessionDuration });
     });
 
     setupForm();
   }
 });
+
+// The rest of your main.js code should follow here...
+
 
 function setupForm() {
   const form = document.getElementById('rakhiForm');
@@ -216,64 +218,82 @@ async function startCameraKit() {
   }
 }
 
-function captureScreenshot(session) {
-  const cameraContainer = document.getElementById('camera-container');
-  const liveOutput = session.output.live;
-  const overlayMessage = document.querySelector('.overlay-message');
+function wrapText(context, text, x, y, maxWidth, lineHeight) {
+  var words = text.split(' ');
+  var line = '';
 
-  if (liveOutput && overlayMessage && cameraContainer) {
-    const tempCanvas = document.createElement('canvas');
-    const context = tempCanvas.getContext('2d');
-    tempCanvas.width = cameraContainer.clientWidth;
-    tempCanvas.height = cameraContainer.clientHeight;
-
-    context.drawImage(liveOutput, 0, 0, tempCanvas.width, tempCanvas.height);
-
-    const fontSize = tempCanvas.width * 0.02; // 2vw equivalent
-    context.font = `${fontSize}px Arial, sans-serif`;
-    context.fillStyle = 'white';
-    context.textAlign = 'center';
-    context.shadowColor = 'rgba(0, 0, 0, 0.7)';
-    context.shadowBlur = 10;
-
-    const overlayText = overlayMessage.textContent;
-
-    const textX = tempCanvas.width / 2;
-    const textY = fontSize + 40; // Adjusted Y position for better visibility
-
-    context.fillText(overlayText, textX, textY);
-
-    tempCanvas.toBlob((blob) => {
-      if (!blob) {
-        console.error('Failed to create blob from canvas');
-        return;
-      }
-
-      logEvent(analytics, 'image_capture'); // Log image capture event
-
-      const file = new File([blob], 'digital_rakhi_screenshot.png', { type: 'image/png' });
-
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        navigator.share({
-          files: [file],
-          title: 'Digital Rakhi',
-          text: 'Check out this cool digital Rakhi!',
-        }).catch((error) => {
-          console.error('Error sharing:', error);
-          downloadImage(blob);
-        });
+  for(var n = 0; n < words.length; n++) {
+      var testLine = line + words[n] + ' ';
+      var metrics = context.measureText(testLine);
+      var testWidth = metrics.width;
+      if (testWidth > maxWidth && n > 0) {
+          context.fillText(line, x, y);
+          line = words[n] + ' ';
+          y += lineHeight;
       } else {
-        downloadImage(blob);
+          line = testLine;
       }
-    }, 'image/png');
-  } else {
-    console.error('Camera output or overlay is not available');
   }
+  context.fillText(line, x, y);
+}
+
+function captureScreenshot(session) {
+const cameraContainer = document.getElementById('camera-container');
+const liveOutput = session.output.live;
+const overlayMessage = document.querySelector('.overlay-message');
+
+if (liveOutput && overlayMessage && cameraContainer) {
+  const tempCanvas = document.createElement('canvas');
+  const context = tempCanvas.getContext('2d');
+  tempCanvas.width = cameraContainer.clientWidth;
+  tempCanvas.height = cameraContainer.clientHeight;
+
+  context.drawImage(liveOutput, 0, 0, tempCanvas.width, tempCanvas.height);
+
+  // Adjust font size based on the height of the canvas
+  const fontSize = 3 * (tempCanvas.height / 100); // 1.4vh
+  context.font = `${fontSize}px Arial, sans-serif`;
+  context.fillStyle = 'white';
+  context.textAlign = 'center';  // Ensure the text is centered
+  context.textBaseline = 'top';
+  context.shadowColor = 'black';
+  context.shadowBlur = 10;
+
+  // Define maximum width for the text
+  const maxTextWidth = tempCanvas.width * 0.8;
+  const textX = tempCanvas.width / 2;  // Center position of the canvas
+  const textY = tempCanvas.height * 0.05;  // 5% from the top of the canvas
+
+  wrapText(context, overlayMessage.textContent, textX, textY, maxTextWidth, fontSize * 1.4);
+
+  tempCanvas.toBlob((blob) => {
+    if (!blob) {
+      console.error('Failed to create blob from canvas');
+      return;
+    }
+
+    logEvent(analytics, 'image_capture'); // Log the image capture event
+
+    const file = new File([blob], 'digital_rakhi_screenshot.png', { type: 'image/png' });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({
+        files: [file],
+        title: 'Digital Rakhi',
+        text: 'Check out this cool digital Rakhi!',
+      }).catch((error) => console.error('Error sharing:', error));
+    } else {
+      downloadImage(blob);
+    }
+  }, 'image/png');
+} else {
+  console.error('Camera output or overlay is not available');
+}
 }
 
 function downloadImage(blob) {
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = 'digital_rakhi_screenshot.png';
-  link.click();
+const link = document.createElement('a');
+link.href = URL.createObjectURL(blob);
+link.download = 'digital_rakhi_screenshot.png';
+link.click();
 }
