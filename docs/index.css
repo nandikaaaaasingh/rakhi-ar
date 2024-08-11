@@ -141,7 +141,7 @@ input:focus::placeholder {
   z-index: 1;
 }
 
-#canvas, #video {
+#canvas {
   position: absolute;
   top: 0;
   left: 0;
