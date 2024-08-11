@@ -199,8 +199,8 @@ async function startCameraKit() {
       let mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'environment',
-          width: { ideal: 3840, min: 1920 },
-          height: { ideal: 2160, min: 1080 }
+          width: { ideal: window.innerWidth, max: 1920 },
+          height: { ideal: window.innerHeight, max: 1080 }
         }
       });
 
