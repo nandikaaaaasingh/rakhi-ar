@@ -204,11 +204,8 @@ async function startCameraKit() {
 
       // Obtain and configure the media stream for high resolution
       let mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: 'environment',
-          width: { ideal: 1920 },
-          height: { ideal: 1920 }
-        }
+        video: { width: 4096, height: 2160, facingMode: 'environment' }
+
       });
 
       const source = createMediaStreamSource(mediaStream, { cameraType: 'back' });
