@@ -35727,11 +35727,8 @@ async function startCameraKit() {
 
     // Obtain and configure the media stream for high resolution
     let mediaStream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        width: { ideal: 1920, max: 4096 },  // Target high resolution for better quality
-        height: { ideal: 1080, max: 2160 },
-        facingMode: 'environment'
-      }
+      video: { width: 4096, height: 2160, facingMode: 'environment' }
+
     });
 
     // Create a media stream source and set it to the session

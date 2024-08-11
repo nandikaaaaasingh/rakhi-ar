@@ -8,7 +8,7 @@
   <script defer src="./packed.js"></script>
 </head>
 <body>
-  <div class="container sender-container" id="senderContainer">
+  <div class="container" id="senderContainer">
     <form id="rakhiForm" class="form-group">
       <div class="input-wrapper">
         <input id="sisterName" type="text" placeholder="Sister's Name" required>
@@ -33,19 +33,8 @@
       </div>
     </form>
   </div>
-
-  <!-- Receiver's Container -->
-  <div class="container receiver-container" id="receiverContainer" style="display: none;">
-    <div class="message" id="receiverMessage">
-      <h1 id="greeting">Loading...</h1>
-      <div class="tap-to-experience">Tap to experience</div>
-    </div>
-  </div>
-
-  <img id="captureButton" src="Images/capture.png" alt="Capture" class="capture-button" style="display: none;">
-  <div class="overlay-message">
-    <h1 id="greeting-overlay">Loading...</h1>
-  </div>
+  <!-- Camera Session -->
   <canvas id="canvas"></canvas>
+  <video id="video" style="display: none;" autoplay muted playsinline></video>
 </body>
 </html>
