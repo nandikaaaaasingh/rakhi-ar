@@ -154,7 +154,7 @@ async function handleTap(receiverContainer, cameraContainer) {
 }
 
 function generateToken(name, email, mobile) {
-  return btoa(`${name.slice(0, 3)}${mobile.slice(-4)}`);
+  return btoa(`${email.slice(0, 3)}${mobile.slice(-4)}`);
 }
 
 function handleSharing(link) {

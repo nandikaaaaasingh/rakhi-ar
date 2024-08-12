@@ -10,10 +10,9 @@ body, html {
   background-color: #f4f4f4; /* Light grey background */
 }
 
-/* Container styles */
 .container {
-  width: 100vw; /* Full width on mobile */
-  height: 100vh; /* Full height on mobile */
+  width: 100vw;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
