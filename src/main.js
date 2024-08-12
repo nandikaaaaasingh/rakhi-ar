@@ -50,16 +50,11 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// The rest of your main.js code should follow here...
-
-
 function setupForm() {
   const form = document.getElementById('rakhiForm');
 
   if (form) {
     form.style.display = 'block';
-    const receiverMessage = document.getElementById('receiverMessage');
-    receiverMessage.style.display = 'none';
 
     form.addEventListener('submit', async function(event) {
       event.preventDefault();
@@ -154,7 +149,7 @@ async function handleTap(receiverContainer, cameraContainer) {
 }
 
 function generateToken(name, email, mobile) {
-  return btoa(`${email.slice(0, 3)}${mobile.slice(-4)}`);
+  return btoa(`${name.slice(0, 3)}${mobile.slice(-4)}`);
 }
 
 function handleSharing(link) {
@@ -191,117 +186,68 @@ async function startCameraKit() {
     // Obtain and configure the media stream for high resolution
     let mediaStream = await navigator.mediaDevices.getUserMedia({
       video: { width: 4096, height: 2160, facingMode: 'environment' }
-
     });
 
     // Create a new session and optionally handle higher resolution settings
-    const session = await cameraKit.createSession({
-      cameraResolution: '1080p'  // This is indicative; actual API parameters may vary
-    });
+    const session = await cameraKit.createSession();
+    document.getElementById('canvas').replaceWith(session.output.live);
 
-    const canvasElement = document.getElementById('canvas');
-    if (canvasElement) {
-      // Replace the existing canvas with the live output from the camera session
-      canvasElement.replaceWith(session.output.live);
+    // Apply a specific lens from the lens repository if needed
+    const { lenses } = await cameraKit.lensRepository.loadLensGroups(['fdd0879f-c570-490e-9dfc-cba0f122699f']);
+    session.applyLens(lenses[0]);
 
-      // Apply a specific lens from the lens repository if needed
-      const { lenses } = await cameraKit.lensRepository.loadLensGroups(['fdd0879f-c570-490e-9dfc-cba0f122699f']);
-      session.applyLens(lenses[0]);
+    const source = createMediaStreamSource(mediaStream, { cameraType: 'back' });
+    await session.setSource(source);
+    session.source.setRenderSize(window.innerWidth, window.innerHeight);
+    session.play();
 
-      const source = createMediaStreamSource(mediaStream, { cameraType: 'back' });
-      await session.setSource(source);
-      session.source.setRenderSize(window.innerWidth, window.innerHeight);
-      session.play();
-
-      // Add the event listener for the capture button here, after the session has started
-      document.getElementById('captureButton').addEventListener('click', () => captureScreenshot(session));
-    } else {
-      console.error('Canvas element not found');
-    }
+    document.getElementById('captureButton').addEventListener('click', () => captureScreenshot(session));
   } catch (error) {
     console.error('Error initializing camera kit or session:', error);
   }
 }
 
-function wrapText(context, text, x, y, maxWidth, lineHeight) {
-  var words = text.split(' ');
-  var line = '';
-
-  for(var n = 0; n < words.length; n++) {
-      var testLine = line + words[n] + ' ';
-      var metrics = context.measureText(testLine);
-      var testWidth = metrics.width;
-      if (testWidth > maxWidth && n > 0) {
-          context.fillText(line, x, y);
-          line = words[n] + ' ';
-          y += lineHeight;
-      } else {
-          line = testLine;
-      }
-  }
-  context.fillText(line, x, y);
-}
-
 function captureScreenshot(session) {
-  const cameraContainer = document.getElementById('camera-container');
   const liveOutput = session.output.live;
-  const overlayMessage = document.querySelector('.overlay-message');
-
-  if (liveOutput && overlayMessage && cameraContainer) {
+  if (liveOutput) {
     const tempCanvas = document.createElement('canvas');
     const context = tempCanvas.getContext('2d', { alpha: true });
-    context.imageSmoothingEnabled = true;  // Enable image smoothing
-    context.imageSmoothingQuality = 'high';  // Set high quality for better scaling
+    context.imageSmoothingEnabled = true;
+    context.imageSmoothingQuality = 'high';
 
-    tempCanvas.width = cameraContainer.clientWidth;
-    tempCanvas.height = cameraContainer.clientHeight;
+    tempCanvas.width = window.innerWidth;
+    tempCanvas.height = window.innerHeight;
 
     context.drawImage(liveOutput, 0, 0, tempCanvas.width, tempCanvas.height);
 
-    // Adjust font size based on the height of the canvas
-    const fontSize = 3 * (tempCanvas.height / 100); // 1.4vh
-    context.font = `${fontSize}px Arial, sans-serif`;
-    context.fillStyle = 'white';
-    context.textAlign = 'center';  // Ensure the text is centered
-    context.textBaseline = 'top';
-    context.shadowColor = 'black';
-    context.shadowBlur = 10; 
+    tempCanvas.toBlob((blob) => {
+      if (!blob) {
+        console.error('Failed to create blob from canvas');
+        return;
+      }
 
-  // Define maximum width for the text
-  const maxTextWidth = tempCanvas.width * 0.8;
-  const textX = tempCanvas.width / 2;  // Center position of the canvas
-  const textY = tempCanvas.height * 0.05;  // 5% from the top of the canvas
+      logEvent(analytics, 'image_capture');
 
-  wrapText(context, overlayMessage.textContent, textX, textY, maxTextWidth, fontSize * 1.4);
+      const file = new File([blob], 'digital_rakhi_screenshot.png', { type: 'image/png' });
 
-  tempCanvas.toBlob((blob) => {
-    if (!blob) {
-      console.error('Failed to create blob from canvas');
-      return;
-    }
-
-    logEvent(analytics, 'image_capture'); // Log the image capture event
-
-    const file = new File([blob], 'digital_rakhi_screenshot.png', { type: 'image/png' });
-
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      navigator.share({
-        files: [file],
-        title: 'Digital Rakhi',
-        text: 'Check out this cool digital Rakhi!',
-      }).catch((error) => console.error('Error sharing:', error));
-    } else {
-      downloadImage(blob);
-    }
-  }, 'image/png');
-} else {
-  console.error('Camera output or overlay is not available');
-}
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({
+          files: [file],
+          title: 'Digital Rakhi',
+          text: 'Check out this cool digital Rakhi!',
+        }).catch((error) => console.error('Error sharing:', error));
+      } else {
+        downloadImage(blob);
+      }
+    }, 'image/png');
+  } else {
+    console.error('Camera output is not available');
+  }
 }
 
 function downloadImage(blob) {
-const link = document.createElement('a');
-link.href = URL.createObjectURL(blob);
-link.download = 'digital_rakhi_screenshot.png';
-link.click();
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'digital_rakhi_screenshot.png';
+  link.click();
 }
