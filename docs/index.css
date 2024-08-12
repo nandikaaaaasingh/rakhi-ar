@@ -10,7 +10,7 @@ body, html {
   background-color: #f4f4f4; /* Light grey background */
 }
 
-/* Center the form container with specific aspect ratio control */
+/* Container styles */
 .container {
   width: 100vw; /* Full width on mobile */
   height: 100vh; /* Full height on mobile */
@@ -22,6 +22,7 @@ body, html {
   background-size: cover;
   position: absolute;
   top: 0;
+  left: 0;
   opacity: 1;
   transition: opacity 1s ease;
 }
@@ -100,43 +101,18 @@ input:focus::placeholder {
   color: black;
 }
 
-/* Receiver message styling */
-.message {
-  position: absolute;
-  top: 5%;
-  width: 70vw;
-  text-align: center;
-  color: rgb(255, 0, 0);
-  font-size: 2vw;
-  z-index: 10;
-  pointer-events: none;
-}
-
-.tap-to-experience {
-  position: absolute;
-  margin-top: 60vh;
-  width: 70vw;
-  text-align: center;
-  color: rgb(255, 255, 255);
-  font-size: 4vw;
-  text-shadow: 0 0 10px #000;
-  z-index: 10;
-  pointer-events: none;
-}
-
 /* Camera container styling */
 #camera-container {
   width: 100vw;
   height: 100vh;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
   background: #000;
   position: absolute;
   top: 0;
   left: 0;
-  opacity: 0; /* Start invisible */
+  opacity: 1;
   transition: opacity 1s ease;
   z-index: 1;
 }
@@ -162,6 +138,29 @@ input:focus::placeholder {
   pointer-events: none;
 }
 
+.message {
+  position: absolute;
+  top: 5%;
+  width: 70vw;
+  text-align: center;
+  color: rgb(255, 0, 0);
+  font-size: 2vw;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.tap-to-experience {
+  position: absolute;
+  margin-top: 60vh;
+  width: 70vw;
+  text-align: center;
+  color: rgb(255, 255, 255);
+  font-size: 4vw;
+  text-shadow: 0 0 10px #000;
+  z-index: 10;
+  pointer-events: none;
+}
+
 .capture-button {
   position: absolute;
   bottom: 10%;
@@ -177,7 +176,6 @@ input:focus::placeholder {
 .capture-button:hover {
   transform: translateX(-50%) scale(1.1); /* Slightly enlarge on hover for effect */
 }
-
 
 /* Additional styles for very large screens */
 @media (min-width: 600px) {
@@ -228,29 +226,5 @@ input:focus::placeholder {
     text-transform: uppercase; /* Converts text to uppercase */
     letter-spacing: 1px; /* Adds spacing between letters */
     transition: background-color 0.3s; /* Smooth transition for hover effect */
-  }
-
-  .message {
-    position: absolute;
-    top: 5%;
-    width: 70%;
-    text-align: center;
-    color: rgb(255, 0, 0);
-    font-size: 1.3vh;
-    z-index: 10;
-    pointer-events: none;
-  }
-  
-  .tap-to-experience {
-    position: absolute;
-    width: 100%;
-    text-align: center;
-    color: rgb(255, 255, 255);
-    font-size: 2vw;
-    text-shadow: 0 0 10px #000;
-    pointer-events: none;
-  }
-  .overlay-message {
-    font-size: 2vw;
   }
 }
