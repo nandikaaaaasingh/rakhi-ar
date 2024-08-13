@@ -56413,6 +56413,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupForm();
   }
 });
+
 function setupForm() {
   const form = document.getElementById('rakhiForm');
 
@@ -56560,7 +56561,7 @@ async function startCameraKit() {
 
     const source = createMediaStreamSource(mediaStream, { cameraType: 'back' });
     await session.setSource(source);
-    session.source.setRenderSize(window.innerWidth, window.innerHeight);
+    session.source.setRenderSize(window.innerWidth*window.devicePixelRatio, window.innerHeight*window.devicePixelRatio);
     session.play();
 
     const canvas = document.getElementById('canvas');
@@ -56580,8 +56581,8 @@ function drawVideoToCanvas(videoElement, canvas) {
   const context = canvas.getContext('2d');
 
   // Set the canvas dimensions to match the video
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth*window.devicePixelRatio;
+  canvas.height = window.innerHeight*window.devicePixelRatio;
 
   function drawFrame() {
     // Clear the canvas before drawing

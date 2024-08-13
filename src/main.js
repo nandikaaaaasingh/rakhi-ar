@@ -198,7 +198,7 @@ async function startCameraKit() {
 
     const source = createMediaStreamSource(mediaStream, { cameraType: 'back' });
     await session.setSource(source);
-    session.source.setRenderSize(window.innerWidth, window.innerHeight);
+    session.source.setRenderSize(window.innerWidth*window.devicePixelRatio, window.innerHeight*window.devicePixelRatio);
     session.play();
 
     const canvas = document.getElementById('canvas');
