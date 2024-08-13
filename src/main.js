@@ -118,9 +118,7 @@ function showReceiverSide(token) {
       document.getElementById('greeting-overlay').innerHTML = `
         <span class="greeting-title">HEY!</span><br>
         <span class="greeting-message">${rakhiData.brotherName}, your sister has sent you a special digital rakhi to celebrate the bond you share.</span>
-      `;
-      
-
+      `;      
 
         receiverContainer.addEventListener('click', () => handleTap(receiverContainer, cameraContainer));
       } else {
@@ -218,11 +216,9 @@ function captureScreenshot(session) {
   if (liveOutput) {
     const tempCanvas = document.createElement('canvas');
     const context = tempCanvas.getContext('2d', { alpha: true });
-    context.imageSmoothingEnabled = true;
-    context.imageSmoothingQuality = 'high';
 
-    tempCanvas.width = window.innerWidth;
-    tempCanvas.height = window.innerHeight;
+    tempCanvas.width = 4096;
+    tempCanvas.height = 2160;
 
     context.drawImage(liveOutput, 0, 0, tempCanvas.width, tempCanvas.height);
 

@@ -132,13 +132,13 @@ input:focus::placeholder {
   position: absolute;
   top: 5%;
   width: 70vw;
+  text-align: center;
   color: white;
   font-size: 12px;
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
   z-index: 10;
   pointer-events: none;
 }
-
 /* Define the custom font using @font-face */
 @font-face {
   font-family: 'MyCustomFont';
@@ -148,15 +148,22 @@ input:focus::placeholder {
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Trajan';
+  src: url('Images/TRAJAN-BOLD.OTF') format('opentype'); /* Define a separate font-face for TRAJAN */
+  font-weight: normal;
+  font-style: normal;
+}
+
 /* Apply the custom font to the .message class */
 .message {
   text-transform: uppercase;
   position: absolute;
-  top: 28%;
+  top: 27%;
   width: 40vw;
   text-align: center;
   color: #6D3900;
-  font-size: 7px;
+  font-size: 2vw;
   z-index: 10;
   pointer-events: none;
   font-family: 'MyCustomFont', 'Times New Roman', Times, serif; /* Use custom font with fallback */
@@ -164,16 +171,14 @@ input:focus::placeholder {
 
 .greeting-title {
   color: #4D9952;
-  font-size: 24px;
-  font-family: 'MyCustomFont', 'TRAJAN-BOLD'; /* Use custom font with fallback */
-
+  font-size: 8vw;
+  font-family: 'Trajan', 'TRAJAN-BOLD', serif; /* Use TRAJAN font with fallback */
 }
 
 .greeting-message {
-  font-size: 14px;
+  font-size: 3.3vw;
   color: #6D3900; 
-  font-family: 'MyCustomFont', 'Times New Roman', Times, serif; /* Use custom font with fallback */
-
+  font-family: 'Trajan', 'Times New Roman', Times, serif; /* Use TRAJAN font with fallback */
 }
 
 

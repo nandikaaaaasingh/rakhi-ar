@@ -56424,33 +56424,27 @@ function setupForm() {
 
       const sisterName = document.getElementById('sisterName').value.trim();
       const brotherName = document.getElementById('brotherName').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const mobile = document.getElementById('mobile').value.trim();
       const termsAccepted = document.getElementById('terms').checked;
 
-      if (!sisterName || !brotherName || !email || !mobile || !termsAccepted) {
+      if (!sisterName || !brotherName || !termsAccepted) {
         alert('Please fill out all fields and accept the terms.');
         return;
       }
 
-      const token = generateToken(sisterName, email, mobile);
+      const token = generateRandomToken();
 
       try {
         const newPostRef = push(ref(database, 'rakhis'));
         await set(newPostRef, {
           sisterName,
           brotherName,
-          email,
-          mobile,
           token,
           createdAt: new Date().toISOString()
         });
 
         logEvent(analytics, 'form_submission', {
           sisterName,
-          brotherName,
-          email,
-          mobile
+          brotherName
         });
 
         const uniqueLink = `${window.location.origin}${window.location.pathname}?token=${token}`;
@@ -56479,8 +56473,15 @@ function showReceiverSide(token) {
     if (data) {
       const rakhiData = Object.values(data).find((entry) => entry.token === token);
       if (rakhiData) {
-        document.getElementById('greeting').innerText = `${rakhiData.sisterName} sent this Digital Rakhi to ${rakhiData.brotherName} with love`;
-        document.getElementById('greeting-overlay').innerText = `${rakhiData.sisterName} sent this Digital Rakhi to ${rakhiData.brotherName} with love`;
+        document.getElementById('greeting').innerHTML = `
+        <span class="greeting-title">HEY!</span><br>
+        <span class="greeting-message">${rakhiData.brotherName}, your sister has sent you a special digital rakhi to celebrate the bond you share.</span>
+      `;
+      
+      document.getElementById('greeting-overlay').innerHTML = `
+        <span class="greeting-title">HEY!</span><br>
+        <span class="greeting-message">${rakhiData.brotherName}, your sister has sent you a special digital rakhi to celebrate the bond you share.</span>
+      `;      
 
         receiverContainer.addEventListener('click', () => handleTap(receiverContainer, cameraContainer));
       } else {
@@ -56511,8 +56512,13 @@ async function handleTap(receiverContainer, cameraContainer) {
   }
 }
 
-function generateToken(name, email, mobile) {
-  return btoa(`${name.slice(0, 3)}${mobile.slice(-4)}`);
+function generateRandomToken() {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let token = '';
+  for (let i = 0; i < 16; i++) { // Generate a 16-character random token
+    token += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return token;
 }
 
 function handleSharing(link) {
@@ -56554,8 +56560,6 @@ async function startCameraKit() {
     // Create a new session and optionally handle higher resolution settings
     const session = await cameraKit.createSession();
     document.getElementById('canvas').replaceWith(session.output.live);
-
-    // Apply a specific lens from the lens repository if needed
     const { lenses } = await cameraKit.lensRepository.loadLensGroups(['fdd0879f-c570-490e-9dfc-cba0f122699f']);
     session.applyLens(lenses[0]);
 
@@ -56575,11 +56579,9 @@ function captureScreenshot(session) {
   if (liveOutput) {
     const tempCanvas = document.createElement('canvas');
     const context = tempCanvas.getContext('2d', { alpha: true });
-    context.imageSmoothingEnabled = true;
-    context.imageSmoothingQuality = 'high';
 
-    tempCanvas.width = window.innerWidth;
-    tempCanvas.height = window.innerHeight;
+    tempCanvas.width = 4096;
+    tempCanvas.height = 2160;
 
     context.drawImage(liveOutput, 0, 0, tempCanvas.width, tempCanvas.height);
 
