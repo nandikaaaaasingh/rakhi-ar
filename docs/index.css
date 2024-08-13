@@ -7,6 +7,8 @@ body, html {
   align-items: center;
   font-family: Arial, sans-serif;
   background-color: #f4f4f4;
+  overflow: hidden; /* Prevent scrolling */
+  touch-action: none; /* Prevent default touch actions like scrolling or zooming */
 }
 
 .container {
@@ -142,8 +144,6 @@ input:focus::placeholder {
   font-family: 'MyCustomFont', 'Times New Roman', Times, serif;
 }
 
-
-
 /* Define the custom font using @font-face */
 @font-face {
   font-family: 'MyCustomFont';
@@ -186,7 +186,6 @@ input:focus::placeholder {
   font-family: 'Trajan', 'Times New Roman', Times, serif; /* Use TRAJAN font with fallback */
 }
 
-
 .capture-button {
   position: absolute;
   bottom: 10%;
@@ -202,5 +201,3 @@ input:focus::placeholder {
 .capture-button:hover {
   transform: translateX(-50%) scale(1.1);
 }
-
-
