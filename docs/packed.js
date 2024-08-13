@@ -56377,7 +56377,7 @@ const firebaseConfig = {
   projectId: "digitalrakhi-f8060",
   storageBucket: "digitalrakhi-f8060.appspot.com",
   messagingSenderId: "360526523502",
-  appId: "1:360526523502:web:3e1af0fd17e9bb1ca5ca7f",
+  appId: "1:360526523502:web:3e1af0fd17e9bb1ca7f",
   measurementId: "G-FPJ5LHJEVS"
 };
 
@@ -56569,55 +56569,68 @@ async function startCameraKit() {
     session.source.setRenderSize(window.innerWidth, window.innerHeight);
     session.play();
 
-    // Replace the existing element with the live video output
+    // Use existing canvas instead of replacing it
     const canvas = document.getElementById('canvas');
     if (canvas) {
-      canvas.parentNode.replaceChild(liveOutput, canvas);
+      drawVideoToCanvas(liveOutput, canvas);
     } else {
       document.body.appendChild(liveOutput);
     }
 
-    document.getElementById('captureButton').addEventListener('click', () => captureScreenshot(session));
+    document.getElementById('captureButton').addEventListener('click', () => captureScreenshot(canvas));
   } catch (error) {
     console.error('Error initializing camera kit or session:', error);
   }
 }
 
-function captureScreenshot(session) {
-  const liveOutput = session.output.live;
-  if (liveOutput) {
-    const tempCanvas = document.createElement('canvas');
-    const context = tempCanvas.getContext('2d', { alpha: true });
+function drawVideoToCanvas(videoElement, canvas) {
+  const context = canvas.getContext('2d');
 
-    // Set the canvas size to match the video element's size
-    tempCanvas.width = liveOutput.videoWidth;
-    tempCanvas.height = liveOutput.videoHeight;
+  // Set the canvas dimensions to match the video
+  canvas.width = videoElement.videoWidth;
+  canvas.height = videoElement.videoHeight;
 
-    context.drawImage(liveOutput, 0, 0, tempCanvas.width, tempCanvas.height);
+  function drawFrame() {
+    // Clear the canvas before drawing
+    context.clearRect(0, 0, canvas.width, canvas.height);
 
-    tempCanvas.toBlob((blob) => {
-      if (!blob) {
-        console.error('Failed to create blob from canvas');
-        return;
-      }
+    // Draw the video frame on the canvas
+    context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
 
-      logEvent(analytics, 'image_capture');
-
-      const file = new File([blob], 'digital_rakhi_screenshot.png', { type: 'image/png' });
-
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        navigator.share({
-          files: [file],
-          title: 'Digital Rakhi',
-          text: 'Check out this cool digital Rakhi!',
-        }).catch((error) => console.error('Error sharing:', error));
-      } else {
-        downloadImage(blob);
-      }
-    }, 'image/png');
-  } else {
-    console.error('Camera output is not available');
+    // Request the next frame
+    requestAnimationFrame(drawFrame);
   }
+
+  // Start drawing frames
+  requestAnimationFrame(drawFrame);
+}
+
+function captureScreenshot(canvas) {
+  if (!canvas) {
+    console.error('Canvas element not found');
+    return;
+  }
+
+  canvas.toBlob((blob) => {
+    if (!blob) {
+      console.error('Failed to create blob from canvas');
+      return;
+    }
+
+    logEvent(analytics, 'image_capture');
+
+    const file = new File([blob], 'digital_rakhi_screenshot.png', { type: 'image/png' });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({
+        files: [file],
+        title: 'Digital Rakhi',
+        text: 'Check out this cool digital Rakhi!',
+      }).catch((error) => console.error('Error sharing:', error));
+    } else {
+      downloadImage(blob);
+    }
+  }, 'image/png');
 }
 
 function downloadImage(blob) {

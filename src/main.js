@@ -206,60 +206,9 @@ async function startCameraKit() {
     session.source.setRenderSize(window.innerWidth, window.innerHeight);
     session.play();
 
-    // Replace the existing element with the live video output
-    const canvas = document.getElementById('canvas');
-    if (canvas) {
-      canvas.parentNode.replaceChild(liveOutput, canvas);
-    } else {
-      document.body.appendChild(liveOutput);
-    }
-
-    document.getElementById('captureButton').addEventListener('click', () => captureScreenshot(session));
+    // Append the live video output to the camera container
+    cameraContainer.appendChild(liveOutput);
   } catch (error) {
     console.error('Error initializing camera kit or session:', error);
   }
-}
-
-function captureScreenshot(session) {
-  const liveOutput = session.output.live;
-  if (liveOutput) {
-    const tempCanvas = document.createElement('canvas');
-    const context = tempCanvas.getContext('2d', { alpha: true });
-
-    // Set the canvas size to match the video element's size
-    tempCanvas.width = liveOutput.videoWidth;
-    tempCanvas.height = liveOutput.videoHeight;
-
-    context.drawImage(liveOutput, 0, 0, tempCanvas.width, tempCanvas.height);
-
-    tempCanvas.toBlob((blob) => {
-      if (!blob) {
-        console.error('Failed to create blob from canvas');
-        return;
-      }
-
-      logEvent(analytics, 'image_capture');
-
-      const file = new File([blob], 'digital_rakhi_screenshot.png', { type: 'image/png' });
-
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        navigator.share({
-          files: [file],
-          title: 'Digital Rakhi',
-          text: 'Check out this cool digital Rakhi!',
-        }).catch((error) => console.error('Error sharing:', error));
-      } else {
-        downloadImage(blob);
-      }
-    }, 'image/png');
-  } else {
-    console.error('Camera output is not available');
-  }
-}
-
-function downloadImage(blob) {
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = 'digital_rakhi_screenshot.png';
-  link.click();
 }
