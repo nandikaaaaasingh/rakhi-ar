@@ -56559,7 +56559,8 @@ async function startCameraKit() {
 
     // Create a new session and optionally handle higher resolution settings
     const session = await cameraKit.createSession();
-    document.getElementById('canvas').replaceWith(session.output.live);
+    const liveOutput = session.output.live; // Video feed element
+
     const { lenses } = await cameraKit.lensRepository.loadLensGroups(['fdd0879f-c570-490e-9dfc-cba0f122699f']);
     session.applyLens(lenses[0]);
 
@@ -56567,6 +56568,14 @@ async function startCameraKit() {
     await session.setSource(source);
     session.source.setRenderSize(window.innerWidth, window.innerHeight);
     session.play();
+
+    // Replace the existing element with the live video output
+    const canvas = document.getElementById('canvas');
+    if (canvas) {
+      canvas.parentNode.replaceChild(liveOutput, canvas);
+    } else {
+      document.body.appendChild(liveOutput);
+    }
 
     document.getElementById('captureButton').addEventListener('click', () => captureScreenshot(session));
   } catch (error) {
@@ -56580,8 +56589,9 @@ function captureScreenshot(session) {
     const tempCanvas = document.createElement('canvas');
     const context = tempCanvas.getContext('2d', { alpha: true });
 
-    tempCanvas.width = 4096;
-    tempCanvas.height = 2160;
+    // Set the canvas size to match the video element's size
+    tempCanvas.width = liveOutput.videoWidth;
+    tempCanvas.height = liveOutput.videoHeight;
 
     context.drawImage(liveOutput, 0, 0, tempCanvas.width, tempCanvas.height);
 
