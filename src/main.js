@@ -173,7 +173,7 @@ async function handleSharing(link) {
     alert('Failed to share or copy link. Please try manually.');
   } finally {
     // Redirect to the thank you page regardless of the share outcome
-    window.location.href = '/thank-you.html';
+    window.location.href = 'thank-you.html';
   }
 }
 
