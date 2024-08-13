@@ -154,32 +154,29 @@ function generateRandomToken() {
 }
 
 async function handleSharing(link) {
-  if (navigator.share) {
-    try {
+  try {
+    if (navigator.share) {
       await navigator.share({
         title: 'Send Digital Rakhi',
         text: 'Check out this digital Rakhi I sent you!',
         url: link
       });
       console.log('Thanks for sharing!');
-    } catch (err) {
-      console.error('Error sharing:', err);
-      // Even if sharing fails, proceed to thank you page
-      throw err;  // Optionally rethrow to handle this case differently
+    } else {
+      // Fallback for browsers that do not support the share API
+      await navigator.clipboard.writeText(link);
+      alert('Link copied to clipboard! Please share manually.');
+      console.log('Link copied to clipboard!');
     }
-  } else {
-    navigator.clipboard.writeText(link)
-      .then(() => {
-        alert('Link copied to clipboard! Please share manually.');
-        console.log('Link copied to clipboard!');
-      })
-      .catch(err => {
-        console.error('Failed to copy link:', err);
-        alert('Failed to copy link. Please try manually.');
-        throw err;  // Optionally rethrow to handle this case differently
-      });
+  } catch (err) {
+    console.error('Error sharing or copying link:', err);
+    alert('Failed to share or copy link. Please try manually.');
+  } finally {
+    // Redirect to the thank you page regardless of the share outcome
+    window.location.href = '/thank-you.html';
   }
 }
+
 
 async function startCameraKit() {
   const cameraContainer = document.getElementById('camera-container');
