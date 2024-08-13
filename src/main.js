@@ -18,6 +18,7 @@ const firebaseConfig = {
   measurementId: "G-FPJ5LHJEVS"
 };
 
+
 // Initialize Firebase and Analytics
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
@@ -111,14 +112,14 @@ function showReceiverSide(token) {
       const rakhiData = Object.values(data).find((entry) => entry.token === token);
       if (rakhiData) {
         document.getElementById('greeting').innerHTML = `
-        <span class="greeting-title">HEY!</span><br>
-        <span class="greeting-message">${rakhiData.brotherName}, your sister has sent you a special digital rakhi to celebrate the bond you share.</span>
-      `;
-      
-      document.getElementById('greeting-overlay').innerHTML = `
-        <span class="greeting-title">HEY!</span><br>
-        <span class="greeting-message">${rakhiData.brotherName}, your sister has sent you a special digital rakhi to celebrate the bond you share.</span>
-      `;      
+          <span class="greeting-title">HEY!</span><br>
+          <span class="greeting-message">${rakhiData.brotherName}, your sister has sent you a special digital rakhi to celebrate the bond you share.</span>
+        `;
+
+        document.getElementById('greeting-overlay').innerHTML = `
+          <span class="greeting-title">HEY!</span><br>
+          <span class="greeting-message">${rakhiData.brotherName}, your sister has sent you a special digital rakhi to celebrate the bond you share.</span>
+        `;
 
         receiverContainer.addEventListener('click', () => handleTap(receiverContainer, cameraContainer));
       } else {
@@ -184,19 +185,16 @@ async function startCameraKit() {
   cameraContainer.style.opacity = 1;
 
   try {
-    // Initialize the camera kit with the appropriate API token
     const cameraKit = await bootstrapCameraKit({
       apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzA2NzExNzk4LCJzdWIiOiJhNWQ0ZjU2NC0yZTM0LTQyN2EtODI1Ni03OGE2NTFhODc0ZTR-U1RBR0lOR35mMzBjN2JmNy1lNjhjLTRhNzUtOWFlNC05NmJjOTNkOGIyOGYifQ.xLriKo1jpzUBAc1wfGpLVeQ44Ewqncblby-wYE1vRu0'
     });
 
-    // Obtain and configure the media stream for high resolution
     let mediaStream = await navigator.mediaDevices.getUserMedia({
       video: { width: 4096, height: 2160, facingMode: 'environment' }
     });
 
-    // Create a new session and optionally handle higher resolution settings
     const session = await cameraKit.createSession();
-    const liveOutput = session.output.live; // Video feed element
+    const liveOutput = session.output.live;
 
     const { lenses } = await cameraKit.lensRepository.loadLensGroups(['fdd0879f-c570-490e-9dfc-cba0f122699f']);
     session.applyLens(lenses[0]);
@@ -206,9 +204,72 @@ async function startCameraKit() {
     session.source.setRenderSize(window.innerWidth, window.innerHeight);
     session.play();
 
-    // Append the live video output to the camera container
-    cameraContainer.appendChild(liveOutput);
+    const canvas = document.getElementById('canvas');
+    if (canvas) {
+      drawVideoToCanvas(liveOutput, canvas);
+    } else {
+      cameraContainer.appendChild(liveOutput);
+    }
+
+    document.getElementById('captureButton').addEventListener('click', () => captureScreenshot(canvas));
   } catch (error) {
     console.error('Error initializing camera kit or session:', error);
   }
+}
+
+function drawVideoToCanvas(videoElement, canvas) {
+  const context = canvas.getContext('2d');
+
+  // Set the canvas dimensions to match the video
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  function drawFrame() {
+    // Clear the canvas before drawing
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw the video frame on the canvas
+    context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+    // Request the next frame
+    requestAnimationFrame(drawFrame);
+  }
+
+  // Start drawing frames
+  requestAnimationFrame(drawFrame);
+}
+
+function captureScreenshot(canvas) {
+  if (!canvas) {
+    console.error('Canvas element not found');
+    return;
+  }
+
+  canvas.toBlob((blob) => {
+    if (!blob) {
+      console.error('Failed to create blob from canvas');
+      return;
+    }
+
+    logEvent(analytics, 'image_capture');
+
+    const file = new File([blob], 'digital_rakhi_screenshot.png', { type: 'image/png' });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({
+        files: [file],
+        title: 'Digital Rakhi',
+        text: 'Check out this cool digital Rakhi!',
+      }).catch((error) => console.error('Error sharing:', error));
+    } else {
+      downloadImage(blob);
+    }
+  }, 'image/png');
+}
+
+function downloadImage(blob) {
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'digital_rakhi_screenshot.png';
+  link.click();
 }
