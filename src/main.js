@@ -55,8 +55,6 @@ function setupForm() {
   const form = document.getElementById('rakhiForm');
 
   if (form) {
-    form.style.display = 'block';
-
     form.addEventListener('submit', async function(event) {
       event.preventDefault();
 
@@ -80,20 +78,16 @@ function setupForm() {
           createdAt: new Date().toISOString()
         });
 
-        logEvent(analytics, 'form_submission', {
-          sisterName,
-          brotherName
-        });
-
         const uniqueLink = `${window.location.origin}${window.location.pathname}?token=${token}`;
-        handleSharing(uniqueLink);
+        await handleSharing(uniqueLink);
+
+        // Redirect to the thank you page after sharing
+        window.location.href = '/thank-you.html';
       } catch (error) {
         console.error('Error saving data or generating link:', error);
         alert('Failed to process your request. Please try again.');
       }
     });
-  } else {
-    console.error('Form element not found');
   }
 }
 
@@ -159,24 +153,31 @@ function generateRandomToken() {
   return token;
 }
 
-function handleSharing(link) {
+async function handleSharing(link) {
   if (navigator.share) {
-    navigator.share({
-      title: 'Send Digital Rakhi',
-      text: 'Check out this digital Rakhi I sent you!',
-      url: link
-    }).then(() => console.log('Thanks for sharing!'))
-    .catch(err => console.error('Error sharing:', err));
+    try {
+      await navigator.share({
+        title: 'Send Digital Rakhi',
+        text: 'Check out this digital Rakhi I sent you!',
+        url: link
+      });
+      console.log('Thanks for sharing!');
+    } catch (err) {
+      console.error('Error sharing:', err);
+      // Even if sharing fails, proceed to thank you page
+      throw err;  // Optionally rethrow to handle this case differently
+    }
   } else {
     navigator.clipboard.writeText(link)
-    .then(() => {
-      alert('Link copied to clipboard! Please share manually.');
-      console.log('Link copied to clipboard!');
-    })
-    .catch(err => {
-      console.error('Failed to copy link:', err);
-      alert('Failed to copy link. Please try manually.');
-    });
+      .then(() => {
+        alert('Link copied to clipboard! Please share manually.');
+        console.log('Link copied to clipboard!');
+      })
+      .catch(err => {
+        console.error('Failed to copy link:', err);
+        alert('Failed to copy link. Please try manually.');
+        throw err;  // Optionally rethrow to handle this case differently
+      });
   }
 }
 
