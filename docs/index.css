@@ -64,6 +64,16 @@ body, html {
   z-index: 100; /* Ensure the logo is on top */
 }
 
+.slogo {
+  position: absolute;
+  bottom: .7%;
+  right: 2%;
+  width: auto; /* Adjust size as needed */
+  height: 20px;
+  z-index: 100; /* Ensure the logo is on top */
+}
+
+
 /* Style each form element */
 .form-group {
   width: 56%;
