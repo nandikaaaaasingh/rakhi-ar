@@ -56550,7 +56550,7 @@ async function startCameraKit() {
     });
 
     let mediaStream = await navigator.mediaDevices.getUserMedia({
-      video: { width: window.innerWidth, height: window.innerHeight, facingMode: 'environment' }
+      video: { width: window.innerWidth*window.devicePixelRatio, height: window.innerHeight*window.devicePixelRatio, facingMode: 'environment' }
     });
 
     const session = await cameraKit.createSession();
