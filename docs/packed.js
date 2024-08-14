@@ -56539,7 +56539,7 @@ async function handleSharing(link) {
     alert('Failed to share or copy link. Please try manually.');
   } finally {
     // Redirect to the thank you page regardless of the share outcome
-    window.location.href = `${window.location.origin}/thank-you.html`;
+    window.location.href = `/thank-you.html`;
   }
 }
 
@@ -56603,9 +56603,6 @@ function drawVideoToCanvas(videoElement, canvas) {
     // Draw the video frame on the canvas
     context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
 
-    // Draw the greeting text on the canvas
-    drawGreetingText(context);
-
     // Request the next frame
     requestAnimationFrame(drawFrame);
   }
@@ -56613,88 +56610,6 @@ function drawVideoToCanvas(videoElement, canvas) {
   // Start drawing frames
   requestAnimationFrame(drawFrame);
 }
-
-function drawGreetingText() {
-  const canvas = document.getElementById('canvas');
-  if (!canvas) {
-    console.error('Canvas element not found.');
-    return;
-  }
-
-  const context = canvas.getContext('2d');
-  if (!context) {
-    console.error('Failed to retrieve context from canvas.');
-    return;
-  }
-
-  const greetingElement = document.getElementById('greeting');
-  if (greetingElement && greetingElement.innerText) {
-    const greetingText = greetingElement.innerText.trim();
-    
-    if (greetingText) {
-      // Extract "HEY!" and the rest of the message
-      const lines = greetingText.split('\n');
-      const heyText = lines[0] || 'HEY!';
-      const messageText = lines.slice(1).join(' ') || 'Your sibling has sent you a special digital rakhi to celebrate the bond you share.';
-
-      // Draw "HEY!" with larger font size and different color
-      context.font = 'bold 34px Trajan, serif'; // Adjust the font style for "HEY!"
-      context.fillStyle = '#4D9952'; // Red color for "HEY!"
-      context.textAlign = 'center';
-
-      const heyX = canvas.width / 2;
-      const heyY = canvas.height / 9 - 30; // Adjust position as needed
-
-      context.fillText(heyText, heyX, heyY);
-
-      // Draw the rest of the message with a different font size and color
-      context.font = '22px Trajan, serif'; // Adjust the font style for the message
-      context.fillStyle = '#6D3900'; // Green color for the message
-
-      const maxWidth = canvas.width * 0.7;
-      const lineHeight = 30;
-
-      const messageLines = wrapText(context, messageText, maxWidth);
-      const messageX = canvas.width / 2;
-      let messageY = heyY + 40; // Position below "HEY!" text
-
-      messageLines.forEach((line) => {
-        context.fillText(line, messageX, messageY, maxWidth);
-        messageY += lineHeight;
-      });
-    } else {
-      console.error('Greeting text is empty or undefined.');
-    }
-  } else {
-    console.error('Greeting element not found or has no text.');
-  }
-}
-
-function wrapText(context, text, maxWidth) {
-  const words = text.split(' ');
-  const lines = [];
-  let currentLine = words[0];
-
-  for (let i = 1; i < words.length; i++) {
-    const word = words[i];
-    const width = context.measureText(currentLine + ' ' + word).width;
-    if (width < maxWidth) {
-      currentLine += ' ' + word;
-    } else {
-      lines.push(currentLine);
-      currentLine = word;
-    }
-  }
-  lines.push(currentLine);
-  return lines;
-}
-
-// Call the drawGreetingText function after ensuring canvas and context are ready
-drawGreetingText();
-
-// Hide the overlay in the container after drawing it on the canvas
-document.getElementById('greeting-overlay').style.display = 'none';
-
 
 function captureScreenshot(canvas) {
   if (!canvas) {
