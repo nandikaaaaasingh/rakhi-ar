@@ -218,8 +218,8 @@ function drawVideoToCanvas(videoElement, canvas) {
   const context = canvas.getContext('2d');
 
   // Set the canvas dimensions to match the video
-  canvas.width = window.innerWidth * window.devicePixelRatio;
-  canvas.height = window.innerHeight * window.devicePixelRatio;
+  canvas.width = window.innerWidth * window.devicePixelRatio/2;
+  canvas.height = window.innerHeight * window.devicePixelRatio/2;
 
   function drawFrame() {
     // Clear the canvas before drawing
