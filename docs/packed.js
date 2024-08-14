@@ -56592,6 +56592,9 @@ async function startCameraKit(rakhiData) {
 function drawVideoToCanvas(videoElement, canvas) {
   const context = canvas.getContext('2d');
 
+  const logo = new Image();
+  logo.src = 'Images/logo.png'; // Path to your logo
+
   // Set the canvas dimensions to match the video
   canvas.width = window.innerWidth * window.devicePixelRatio;
   canvas.height = window.innerHeight * window.devicePixelRatio;
@@ -56602,6 +56605,17 @@ function drawVideoToCanvas(videoElement, canvas) {
 
     // Draw the video frame on the canvas
     context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+    
+   // Calculate the logo dimensions and position based on the given CSS-like properties
+   const logoHeight = canvas.height * 0.08;  // 8% of canvas height
+   const logoWidth = logo.naturalWidth * (logoHeight / logo.naturalHeight); // Maintain aspect ratio
+
+   const logoX = canvas.width - logoWidth - (canvas.width * 0.01); // 1% from the right
+   const logoY = canvas.height * 0.007; // 0.7% from the top
+
+   // Draw the logo on the canvas
+   context.drawImage(logo, logoX, logoY, logoWidth, logoHeight);
 
     // Request the next frame
     requestAnimationFrame(drawFrame);
