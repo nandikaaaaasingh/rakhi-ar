@@ -186,8 +186,9 @@ async function startCameraKit() {
       apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzA2NzExNzk4LCJzdWIiOiJhNWQ0ZjU2NC0yZTM0LTQyN2EtODI1Ni03OGE2NTFhODc0ZTR-U1RBR0lOR35mMzBjN2JmNy1lNjhjLTRhNzUtOWFlNC05NmJjOTNkOGIyOGYifQ.xLriKo1jpzUBAc1wfGpLVeQ44Ewqncblby-wYE1vRu0'
     });
 
+    // Use the actual screen resolution for video dimensions
     let mediaStream = await navigator.mediaDevices.getUserMedia({
-      video: { width: window.innerWidth*window.decodeURIComponent, height: window.innerHeight*window.devicePixelRatio, facingMode: 'environment' }
+      video: { width: window.innerWidth * window.devicePixelRatio, height: window.innerHeight * window.devicePixelRatio, facingMode: 'environment' }
     });
 
     const session = await cameraKit.createSession();
@@ -198,7 +199,11 @@ async function startCameraKit() {
 
     const source = createMediaStreamSource(mediaStream, { cameraType: 'back' });
     await session.setSource(source);
-    session.source.setRenderSize(window.innerWidth*window.devicePixelRatio, window.innerHeight*window.devicePixelRatio);
+
+    // Set the render size based on the actual screen resolution
+    const renderWidth = window.innerWidth * window.devicePixelRatio;
+    const renderHeight = window.innerHeight * window.devicePixelRatio;
+    session.source.setRenderSize(renderWidth, renderHeight);
     session.play();
 
     const canvas = document.getElementById('canvas');
@@ -217,9 +222,9 @@ async function startCameraKit() {
 function drawVideoToCanvas(videoElement, canvas) {
   const context = canvas.getContext('2d');
 
-  // Set the canvas dimensions to match the video
-  canvas.width = window.innerWidth * window.devicePixelRatio/2;
-  canvas.height = window.innerHeight * window.devicePixelRatio/2;
+  // Set the canvas dimensions to match the video and the screen's pixel ratio
+  canvas.width = window.innerWidth * window.devicePixelRatio;
+  canvas.height = window.innerHeight * window.devicePixelRatio;
 
   function drawFrame() {
     // Clear the canvas before drawing
@@ -227,9 +232,6 @@ function drawVideoToCanvas(videoElement, canvas) {
 
     // Draw the video frame on the canvas
     context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-
-    // Draw the greeting text on the canvas
-    drawGreetingText(context);
 
     // Request the next frame
     requestAnimationFrame(drawFrame);
