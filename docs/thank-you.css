@@ -32,6 +32,15 @@ body, html {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.logo {
+    position: absolute;
+    top: .7%;
+    right: 1%;
+    width: auto; /* Adjust size as needed */
+    height: 8%;
+    z-index: 100; /* Ensure the logo is on top */
+  }
+  
 .home-button {
     display: inline-block;
     padding: 10px 16px;

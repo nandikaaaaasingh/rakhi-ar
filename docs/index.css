@@ -17,7 +17,6 @@ body, html {
   width: 100vw;
   height: 100vh;
   max-width: 56.4vh;
-
   display: flex;
   justify-content: center;
   align-items: center;
@@ -56,6 +55,14 @@ body, html {
   height: 100vh;
 }
 
+.logo {
+  position: absolute;
+  top: .7%;
+  right: 1%;
+  width: auto; /* Adjust size as needed */
+  height: 8%;
+  z-index: 100; /* Ensure the logo is on top */
+}
 
 /* Style each form element */
 .form-group {
