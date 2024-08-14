@@ -1,0 +1,59 @@
+/* Ensure the body and html take full height and center content */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(255, 255, 255);
+    overflow: hidden;
+}
+
+@font-face {
+    font-family: 'Trajan';
+    src: url('Images/TRAJAN-BOLD.OTF') format('opentype'); /* Define a separate font-face for TRAJAN */
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Centering the container both vertically and horizontally */
+.container {
+
+    height: 100%;
+    width: 90%;
+    padding-top: 50%;
+    background-color: rgb(255, 255, 255);
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+   
+}
+
+.logo {
+    position: absolute;
+    top: .7%;
+    right: 1%;
+    width: auto; /* Adjust size as needed */
+    height: 8%;
+    z-index: 100; /* Ensure the logo is on top */
+  }
+  
+  .home-button {
+    display: inline-block;
+    padding: 10px 16px;
+    font-size: 1.2vh;
+    color: #6D3900;
+    border: .5px solid #6D3900;
+    border-radius: 5px;
+    margin-top: 10vh;
+    text-decoration: none;
+    transition: background-color 0.3s;
+    font-family: 'Trajan', 'TRAJAN-BOLD', serif; /* Use TRAJAN font with fallback */
+}
+
+.home-button:hover {
+    background-color: #6D3900;
+    color: white;
+}
+
