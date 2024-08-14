@@ -56550,7 +56550,7 @@ async function startCameraKit() {
     });
 
     let mediaStream = await navigator.mediaDevices.getUserMedia({
-      video: { width: 4096, height: 2160, facingMode: 'environment' }
+      video: { width: window.innerWidth, height: window.innerHeight, facingMode: 'environment' }
     });
 
     const session = await cameraKit.createSession();
@@ -56623,7 +56623,7 @@ function drawGreetingText() {
       // Extract "HEY!" and the rest of the message
       const lines = greetingText.split('\n');
       const heyText = lines[0] || 'HEY!';
-      const messageText = lines.slice(1).join(' ') || 'Your sister has sent you a special digital rakhi to celebrate the bond you share.';
+      const messageText = lines.slice(1).join(' ') || 'Your sibling has sent you a special digital rakhi to celebrate the bond you share.';
 
       // Draw "HEY!" with larger font size and different color
       context.font = 'bold 34px Trajan, serif'; // Adjust the font style for "HEY!"
