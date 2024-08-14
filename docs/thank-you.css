@@ -26,7 +26,7 @@ body, html {
     align-items: center;
     flex-direction: column;
     text-align: center;
-    background: url('Images/thankyou.png') no-repeat center center;
+    background: url('Images/thankyou.webp') no-repeat center center;
     background-size: cover;    padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
