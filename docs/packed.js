@@ -56469,8 +56469,8 @@ function showReceiverSide(token) {
       const rakhiData = Object.values(data).find((entry) => entry.token === token);
       if (rakhiData) {
         document.getElementById('greeting').innerHTML = `
-          <span class="greeting-title">HEY! ${rakhiData.brotherName}, </span><br>
-          <span class="greeting-message"> your sibling has sent you a special digital rakhi to celebrate the bond you share.</span>
+          <span class="greeting-title">HEY!</span><br>
+          <span class="greeting-message">${rakhiData.brotherName}, your sister has sent you a special digital rakhi to celebrate the bond you share.</span>
         `;
 
         document.getElementById('greeting-overlay').innerHTML = `
@@ -56550,7 +56550,7 @@ async function startCameraKit() {
     });
 
     let mediaStream = await navigator.mediaDevices.getUserMedia({
-      video: { width: window.innerWidth*window.devicePixelRatio, height: window.innerHeight*window.devicePixelRatio, facingMode: 'environment' }
+      video: { width: 4096, height: 2160, facingMode: 'environment' }
     });
 
     const session = await cameraKit.createSession();
@@ -56577,11 +56577,10 @@ async function startCameraKit() {
   }
 }
 
-
 function drawVideoToCanvas(videoElement, canvas) {
   const context = canvas.getContext('2d');
 
-  // Set the canvas dimensions to match the video and the screen's pixel ratio
+  // Set the canvas dimensions to match the video
   canvas.width = window.innerWidth * window.devicePixelRatio;
   canvas.height = window.innerHeight * window.devicePixelRatio;
 
@@ -56591,6 +56590,9 @@ function drawVideoToCanvas(videoElement, canvas) {
 
     // Draw the video frame on the canvas
     context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+    // Draw the greeting text on the canvas
+    drawGreetingText(context);
 
     // Request the next frame
     requestAnimationFrame(drawFrame);
@@ -56624,21 +56626,21 @@ function drawGreetingText() {
       const messageText = lines.slice(1).join(' ') || 'Your sister has sent you a special digital rakhi to celebrate the bond you share.';
 
       // Draw "HEY!" with larger font size and different color
-      context.font = 'bold 24px Trajan, serif'; // Adjust the font style for "HEY!"
-      context.fillStyle = '#FF0000'; // Red color for "HEY!"
+      context.font = 'bold 34px Trajan, serif'; // Adjust the font style for "HEY!"
+      context.fillStyle = '#4D9952'; // Red color for "HEY!"
       context.textAlign = 'center';
 
       const heyX = canvas.width / 2;
-      const heyY = canvas.height / 2 - 30; // Adjust position as needed
+      const heyY = canvas.height / 9 - 30; // Adjust position as needed
 
       context.fillText(heyText, heyX, heyY);
 
       // Draw the rest of the message with a different font size and color
-      context.font = '18px Trajan, serif'; // Adjust the font style for the message
-      context.fillStyle = '#4D9952'; // Green color for the message
+      context.font = '22px Trajan, serif'; // Adjust the font style for the message
+      context.fillStyle = '#6D3900'; // Green color for the message
 
-      const maxWidth = canvas.width * 0.8;
-      const lineHeight = 24;
+      const maxWidth = canvas.width * 0.7;
+      const lineHeight = 30;
 
       const messageLines = wrapText(context, messageText, maxWidth);
       const messageX = canvas.width / 2;
@@ -56680,7 +56682,6 @@ drawGreetingText();
 
 // Hide the overlay in the container after drawing it on the canvas
 document.getElementById('greeting-overlay').style.display = 'none';
-
 
 
 function captureScreenshot(canvas) {
