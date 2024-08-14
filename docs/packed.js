@@ -56551,7 +56551,7 @@ async function startCameraKit() {
 
     // Use the actual screen resolution for video dimensions
     let mediaStream = await navigator.mediaDevices.getUserMedia({
-      video: { width: window.innerWidth * window.devicePixelRatio/2, height: window.innerHeight * window.devicePixelRatio/2, facingMode: 'environment' }
+      video: { width: window.innerWidth * window.devicePixelRatio, height: window.innerHeight * window.devicePixelRatio, facingMode: 'environment' }
     });
 
     const session = await cameraKit.createSession();
@@ -56564,8 +56564,8 @@ async function startCameraKit() {
     await session.setSource(source);
 
     // Set the render size based on the actual screen dimensions, not the pixel ratio
-    const renderWidth = window.innerWidth* window.devicePixelRatio/2;
-    const renderHeight = window.innerHeight* window.devicePixelRatio/2;
+    const renderWidth = window.innerWidth;
+    const renderHeight = window.innerHeight;
     session.source.setRenderSize(renderWidth, renderHeight);
     session.play();
 
@@ -56586,8 +56586,8 @@ function drawVideoToCanvas(videoElement, canvas) {
   const context = canvas.getContext('2d');
 
   // Set the canvas dimensions to match the video and screen size
-  canvas.width = window.innerWidth* window.devicePixelRatio/2;
-  canvas.height = window.innerHeight* window.devicePixelRatio/2;
+  canvas.width = window.innerWidth * window.devicePixelRatio;
+  canvas.height = window.innerHeight * window.devicePixelRatio;
 
   function drawFrame() {
     // Clear the canvas before drawing
@@ -56631,11 +56631,11 @@ function drawGreetingText(context) {
       context.fillText(heyText, heyX, heyY);
 
       // Draw the rest of the message with a different font size and color
-      context.font = '10px Trajan, serif'; // Adjust the font style for the message
+      context.font = '20px Trajan, serif'; // Adjust the font style for the message
       context.fillStyle = '#6D3900'; // Color for the message
 
       const maxWidth = canvas.width * 0.7;
-      const lineHeight = 16;
+      const lineHeight = 30;
 
       const messageLines = wrapText(context, messageText, maxWidth);
       const messageX = canvas.width / 2;
