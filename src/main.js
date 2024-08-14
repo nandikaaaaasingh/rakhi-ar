@@ -106,13 +106,14 @@ function showReceiverSide(token) {
       const rakhiData = Object.values(data).find((entry) => entry.token === token);
       if (rakhiData) {
         document.getElementById('greeting').innerHTML = `
-          <span class="greeting-title">HEY! ${rakhiData.brotherName},</span><br>
-          <span class="greeting-message"> your sister has sent you a special digital rakhi to celebrate the bond you share.</span>
+          <span class="greeting-title">HEY! </span><br>
+          <span class="greeting-title">${rakhiData.brotherName},</span><br>
+          <span class="greeting-message"> your sibling has sent you a special digital rakhi to celebrate the bond you share.</span>
         `;
 
         document.getElementById('greeting-overlay').innerHTML = `
           <span class="greeting-title">HEY!</span><br>
-          <span class="greeting-message">${rakhiData.brotherName}, your sister has sent you a special digital rakhi to celebrate the bond you share.</span>
+          <span class="greeting-message">${rakhiData.brotherName}, your sibling has sent you a special digital rakhi to celebrate the bond you share.</span>
         `;
 
         receiverContainer.addEventListener('click', () => handleTap(receiverContainer, cameraContainer));
@@ -335,7 +336,7 @@ function captureScreenshot(canvas) {
 
     logEvent(analytics, 'image_capture');
 
-    const file = new File([blob], 'digital_rakhi_screenshot.png', { type: 'image/png' });
+    const file = new File([blob], 'digital_rakhi.png', { type: 'image/png' });
 
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       navigator.share({
@@ -352,6 +353,11 @@ function captureScreenshot(canvas) {
 function downloadImage(blob) {
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = 'digital_rakhi_screenshot.png';
+  link.download = 'digital_rakhi.png';
   link.click();
+
+  // Add a delay to ensure the download is initiated before redirecting
+  setTimeout(() => {
+    window.location.href = 'thank-your.html'; // Redirect to the Thank You page
+  }, 1000); // 1-second delay, adjust if needed
 }
