@@ -187,7 +187,7 @@ async function startCameraKit() {
     });
 
     let mediaStream = await navigator.mediaDevices.getUserMedia({
-      video: { width: window.innerWidth*window.devicePixelRatio, height: window.innerHeight*window.devicePixelRatio, facingMode: 'environment' }
+      video: { width: 2160, height: 2160, facingMode: 'environment' }
     });
 
     const session = await cameraKit.createSession();
