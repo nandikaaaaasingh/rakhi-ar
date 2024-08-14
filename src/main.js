@@ -201,8 +201,8 @@ async function startCameraKit() {
     await session.setSource(source);
 
     // Set the render size based on the actual screen dimensions, not the pixel ratio
-    const renderWidth = window.innerWidth;
-    const renderHeight = window.innerHeight;
+    const renderWidth = window.innerWidth* window.devicePixelRatio;
+    const renderHeight = window.innerHeight* window.devicePixelRatio;
     session.source.setRenderSize(renderWidth, renderHeight);
     session.play();
 
@@ -223,8 +223,8 @@ function drawVideoToCanvas(videoElement, canvas) {
   const context = canvas.getContext('2d');
 
   // Set the canvas dimensions to match the video and screen size
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth* window.devicePixelRatio;
+  canvas.height = window.innerHeight* window.devicePixelRatio;
 
   function drawFrame() {
     // Clear the canvas before drawing
