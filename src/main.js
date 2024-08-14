@@ -194,10 +194,14 @@ async function startCameraKit(rakhiData) {
     });
 
     const session = await cameraKit.createSession();
-    const liveOutput = session.output.live;
-
-    const { lenses } = await cameraKit.lensRepository.loadLensGroups(['fdd0879f-c570-490e-9dfc-cba0f122699f']);
-    session.applyLens(lenses[0]);
+    const lens = await cameraKit.lensRepository.loadLens('d5d8d026-effa-4d97-8147-64b6c6b1435e', 'fdd0879f-c570-490e-9dfc-cba0f122699f');
+    await session.applyLens(lens, {
+      launchParams: {
+        greeting_text: `Hey! ${rakhiData.brotherName}`,
+        brother_name: `${rakhiData.brotherName}`,
+        message: "Your sibling has sent you a special digital rakhi to celebrate the bond you share."
+      }
+    });
 
     const source = createMediaStreamSource(mediaStream, { cameraType: 'back' });
     await session.setSource(source);
@@ -206,13 +210,9 @@ async function startCameraKit(rakhiData) {
     session.source.setRenderSize(window.innerWidth * window.devicePixelRatio, window.innerHeight * window.devicePixelRatio);
     session.play();
 
-    // Pass the greeting and name to the lens via launchParams
-    session.setLaunchParams({
-      greeting_text: `Hey! ${rakhiData.brotherName}`,
-      brother_name: `${rakhiData.brotherName}`,
-      message: "Your sibling has sent you a special digital rakhi to celebrate the bond you share."
-    });
-  
+    // Define liveOutput correctly from the session output
+    const liveOutput = session.output.live;
+
     const canvas = document.getElementById('canvas');
     if (canvas) {
       drawVideoToCanvas(liveOutput, canvas);
