@@ -188,7 +188,7 @@ async function startCameraKit() {
 
     // Use the actual screen resolution for video dimensions
     let mediaStream = await navigator.mediaDevices.getUserMedia({
-      video: { width: window.innerWidth * window.devicePixelRatio, height: window.innerHeight * window.devicePixelRatio, facingMode: 'environment' }
+      video: { width: window.innerWidth, height: window.innerHeight, facingMode: 'environment' }
     });
 
     const session = await cameraKit.createSession();
@@ -200,9 +200,9 @@ async function startCameraKit() {
     const source = createMediaStreamSource(mediaStream, { cameraType: 'back' });
     await session.setSource(source);
 
-    // Set the render size based on the actual screen resolution
-    const renderWidth = window.innerWidth * window.devicePixelRatio;
-    const renderHeight = window.innerHeight * window.devicePixelRatio;
+    // Set the render size based on the actual screen dimensions, not the pixel ratio
+    const renderWidth = window.innerWidth;
+    const renderHeight = window.innerHeight;
     session.source.setRenderSize(renderWidth, renderHeight);
     session.play();
 
@@ -222,9 +222,9 @@ async function startCameraKit() {
 function drawVideoToCanvas(videoElement, canvas) {
   const context = canvas.getContext('2d');
 
-  // Set the canvas dimensions to match the video and the screen's pixel ratio
-  canvas.width = window.innerWidth * window.devicePixelRatio;
-  canvas.height = window.innerHeight * window.devicePixelRatio;
+  // Set the canvas dimensions to match the video and screen size
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 
   function drawFrame() {
     // Clear the canvas before drawing
