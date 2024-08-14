@@ -39,13 +39,13 @@ body, html {
 }
 
 .sender-container {
-  background: url('Images/sender.png') no-repeat center center;
+  background: url('Images/sender.webp') no-repeat center center;
   background-size: cover;
 
 }
 
 .receiver-container {
-  background: url('Images/receiver.png') no-repeat center center;
+  background: url('Images/receiver.webp') no-repeat center center;
   background-size: cover;
 
 }
