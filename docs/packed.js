@@ -56551,7 +56551,7 @@ async function startCameraKit() {
 
     // Use the actual screen resolution for video dimensions
     let mediaStream = await navigator.mediaDevices.getUserMedia({
-      video: { width: window.innerWidth* window.devicePixelRatio, height: window.innerHeight* window.devicePixelRatio, facingMode: 'environment' }
+      video: { width: window.innerWidth * window.devicePixelRatio, height: window.innerHeight * window.devicePixelRatio, facingMode: 'environment' }
     });
 
     const session = await cameraKit.createSession();
@@ -56563,9 +56563,9 @@ async function startCameraKit() {
     const source = createMediaStreamSource(mediaStream, { cameraType: 'back' });
     await session.setSource(source);
 
-    // Set the render size based on the actual screen dimensions, not the pixel ratio
-    const renderWidth = window.innerWidth* window.devicePixelRatio;
-    const renderHeight = window.innerHeight* window.devicePixelRatio;
+    // Set the render size based on the actual screen resolution
+    const renderWidth = window.innerWidth * window.devicePixelRatio;
+    const renderHeight = window.innerHeight * window.devicePixelRatio;
     session.source.setRenderSize(renderWidth, renderHeight);
     session.play();
 
@@ -56581,6 +56581,7 @@ async function startCameraKit() {
     console.error('Error initializing camera kit or session:', error);
   }
 }
+
 
 function drawVideoToCanvas(videoElement, canvas) {
   const context = canvas.getContext('2d');
@@ -56621,7 +56622,7 @@ function drawGreetingText(context) {
       const messageText = lines.slice(1).join(' ') || 'Your sister has sent you a special digital rakhi to celebrate the bond you share.';
 
       // Draw "HEY!" with larger font size and different color
-      context.font = 'bold 30px Trajan, serif'; // Adjust the font style for "HEY!"
+      context.font = 'bold 50px Trajan, serif'; // Adjust the font style for "HEY!"
       context.fillStyle = '#4D9952'; // Color for "HEY!"
       context.textAlign = 'center';
 
@@ -56631,7 +56632,7 @@ function drawGreetingText(context) {
       context.fillText(heyText, heyX, heyY);
 
       // Draw the rest of the message with a different font size and color
-      context.font = '20px Trajan, serif'; // Adjust the font style for the message
+      context.font = '30px Trajan, serif'; // Adjust the font style for the message
       context.fillStyle = '#6D3900'; // Color for the message
 
       const maxWidth = canvas.width * 0.7;
@@ -56639,7 +56640,7 @@ function drawGreetingText(context) {
 
       const messageLines = wrapText(context, messageText, maxWidth);
       const messageX = canvas.width / 2;
-      let messageY = heyY + 40; // Position below "HEY!" text
+      let messageY = heyY + 60; // Position below "HEY!" text
 
       messageLines.forEach((line) => {
         context.fillText(line, messageX, messageY, maxWidth);
