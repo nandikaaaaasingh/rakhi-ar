@@ -116,7 +116,7 @@ function showReceiverSide(token) {
           <span class="greeting-message">${rakhiData.brotherName}, your sibling has sent you a special digital rakhi to celebrate the bond you share.</span>
         `;
 
-        receiverContainer.addEventListener('click', () => handleTap(receiverContainer, cameraContainer));
+        receiverContainer.addEventListener('click', () => handleTap(receiverContainer, cameraContainer, rakhiData));
       } else {
         document.getElementById('greeting').innerText = 'No Rakhi information found.';
         document.getElementById('greeting-overlay').innerText = 'No Rakhi information found.';
@@ -129,9 +129,10 @@ function showReceiverSide(token) {
   });
 }
 
-async function handleTap(receiverContainer, cameraContainer) {
+
+async function handleTap(receiverContainer, cameraContainer, rakhiData) {
   try {
-    await startCameraKit();
+    await startCameraKit(rakhiData);
 
     cameraContainer.style.display = 'flex';
     receiverContainer.style.opacity = 0;
@@ -144,6 +145,7 @@ async function handleTap(receiverContainer, cameraContainer) {
     console.error('Error initializing camera:', error);
   }
 }
+
 
 function generateRandomToken() {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -178,7 +180,7 @@ async function handleSharing(link) {
   }
 }
 
-async function startCameraKit() {
+async function startCameraKit(rakhiData) {
   const cameraContainer = document.getElementById('camera-container');
   cameraContainer.style.opacity = 1;
 
@@ -199,9 +201,18 @@ async function startCameraKit() {
 
     const source = createMediaStreamSource(mediaStream, { cameraType: 'back' });
     await session.setSource(source);
-    session.source.setRenderSize(window.innerWidth*window.devicePixelRatio, window.innerHeight*window.devicePixelRatio);
+
+    // Set the render size based on the actual screen resolution
+    session.source.setRenderSize(window.innerWidth * window.devicePixelRatio, window.innerHeight * window.devicePixelRatio);
     session.play();
 
+    // Pass the greeting and name to the lens via launchParams
+    session.setLaunchParams({
+      greeting_text: `Hey! ${rakhiData.brotherName}`,
+      brother_name: `${rakhiData.brotherName}`,
+      message: "Your sibling has sent you a special digital rakhi to celebrate the bond you share."
+    });
+  
     const canvas = document.getElementById('canvas');
     if (canvas) {
       drawVideoToCanvas(liveOutput, canvas);
