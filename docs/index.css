@@ -194,7 +194,7 @@ input:focus::placeholder {
 .message {
   text-transform: uppercase;
   position: absolute;
-  top: 27vh;
+  top: 25vh;
   width: 40%;
   text-align: center;
   color: #6D3900;
