@@ -219,11 +219,10 @@ async function startCameraKit() {
   }
 }
 
-
 function drawVideoToCanvas(videoElement, canvas) {
   const context = canvas.getContext('2d');
 
-  // Set the canvas dimensions to match the video and screen size
+  // Set the canvas dimensions to match the video and the screen's pixel ratio
   canvas.width = window.innerWidth * window.devicePixelRatio;
   canvas.height = window.innerHeight * window.devicePixelRatio;
 
@@ -234,9 +233,6 @@ function drawVideoToCanvas(videoElement, canvas) {
     // Draw the video frame on the canvas
     context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
 
-    // Draw the greeting text on top of the video
-    drawGreetingText(context);
-
     // Request the next frame
     requestAnimationFrame(drawFrame);
   }
@@ -245,13 +241,23 @@ function drawVideoToCanvas(videoElement, canvas) {
   requestAnimationFrame(drawFrame);
 }
 
-function drawGreetingText(context) {
-  const canvas = context.canvas;
+function drawGreetingText() {
+  const canvas = document.getElementById('canvas');
+  if (!canvas) {
+    console.error('Canvas element not found.');
+    return;
+  }
+
+  const context = canvas.getContext('2d');
+  if (!context) {
+    console.error('Failed to retrieve context from canvas.');
+    return;
+  }
 
   const greetingElement = document.getElementById('greeting');
   if (greetingElement && greetingElement.innerText) {
     const greetingText = greetingElement.innerText.trim();
-
+    
     if (greetingText) {
       // Extract "HEY!" and the rest of the message
       const lines = greetingText.split('\n');
@@ -259,25 +265,25 @@ function drawGreetingText(context) {
       const messageText = lines.slice(1).join(' ') || 'Your sister has sent you a special digital rakhi to celebrate the bond you share.';
 
       // Draw "HEY!" with larger font size and different color
-      context.font = 'bold 50px Trajan, serif'; // Adjust the font style for "HEY!"
-      context.fillStyle = '#4D9952'; // Color for "HEY!"
+      context.font = 'bold 34px Trajan, serif'; // Adjust the font style for "HEY!"
+      context.fillStyle = '#4D9952'; // Red color for "HEY!"
       context.textAlign = 'center';
 
       const heyX = canvas.width / 2;
-      const heyY = canvas.height / 8 - 30; // Adjust position as needed
+      const heyY = canvas.height / 9 - 30; // Adjust position as needed
 
       context.fillText(heyText, heyX, heyY);
 
       // Draw the rest of the message with a different font size and color
-      context.font = '30px Trajan, serif'; // Adjust the font style for the message
-      context.fillStyle = '#6D3900'; // Color for the message
+      context.font = '22px Trajan, serif'; // Adjust the font style for the message
+      context.fillStyle = '#6D3900'; // Green color for the message
 
       const maxWidth = canvas.width * 0.7;
       const lineHeight = 30;
 
       const messageLines = wrapText(context, messageText, maxWidth);
       const messageX = canvas.width / 2;
-      let messageY = heyY + 60; // Position below "HEY!" text
+      let messageY = heyY + 40; // Position below "HEY!" text
 
       messageLines.forEach((line) => {
         context.fillText(line, messageX, messageY, maxWidth);
@@ -309,9 +315,6 @@ function wrapText(context, text, maxWidth) {
   lines.push(currentLine);
   return lines;
 }
-
-// Call the drawVideoToCanvas function when initializing the camera
-// The canvas element should be passed to this function when initializing the camera session
 
 
 function captureScreenshot(canvas) {
