@@ -186,9 +186,8 @@ async function startCameraKit() {
       apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzA2NzExNzk4LCJzdWIiOiJhNWQ0ZjU2NC0yZTM0LTQyN2EtODI1Ni03OGE2NTFhODc0ZTR-U1RBR0lOR35mMzBjN2JmNy1lNjhjLTRhNzUtOWFlNC05NmJjOTNkOGIyOGYifQ.xLriKo1jpzUBAc1wfGpLVeQ44Ewqncblby-wYE1vRu0'
     });
 
-    // Use the actual screen resolution for video dimensions
     let mediaStream = await navigator.mediaDevices.getUserMedia({
-      video: { width: window.innerWidth * window.devicePixelRatio, height: window.innerHeight * window.devicePixelRatio, facingMode: 'environment' }
+      video: { width: 4096, height: 2160, facingMode: 'environment' }
     });
 
     const session = await cameraKit.createSession();
@@ -199,11 +198,7 @@ async function startCameraKit() {
 
     const source = createMediaStreamSource(mediaStream, { cameraType: 'back' });
     await session.setSource(source);
-
-    // Set the render size based on the actual screen resolution
-    const renderWidth = window.innerWidth * window.devicePixelRatio;
-    const renderHeight = window.innerHeight * window.devicePixelRatio;
-    session.source.setRenderSize(renderWidth, renderHeight);
+    session.source.setRenderSize(window.innerWidth * window.devicePixelRatio, window.innerHeight * window.devicePixelRatio);
     session.play();
 
     const canvas = document.getElementById('canvas');
