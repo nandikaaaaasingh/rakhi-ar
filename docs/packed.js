@@ -56398,7 +56398,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.addEventListener('beforeunload', () => {
       const sessionDuration = Date.now() - pageSessionStart;
-      logEvent(analytics, 'token_page_session', { duration_ms: sessionDuration });
+      logEvent(analytics, 'token_page_session_duration', { duration_seconds: Math.floor(sessionDuration / 1000) });
     });
 
     showReceiverSide(token);
@@ -56407,7 +56407,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.addEventListener('beforeunload', () => {
       const sessionDuration = Date.now() - pageSessionStart;
-      logEvent(analytics, 'main_page_session', { duration_ms: sessionDuration });
+      logEvent(analytics, 'main_page_session_duration', { duration_seconds: Math.floor(sessionDuration / 1000) });
     });
 
     setupForm();
