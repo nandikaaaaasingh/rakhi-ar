@@ -56478,14 +56478,14 @@ function showReceiverSide(token) {
       const rakhiData = Object.values(data).find((entry) => entry.token === token);
       if (rakhiData) {
         document.getElementById('greeting').innerHTML = `
-          <span class="greeting-title">HEY! </span><br>
-          <span class="greeting-title">${rakhiData.brotherName},</span><br>
+          <span class="greeting-title">HEY </span><br>
+          <span class="greeting-title">${rakhiData.brotherName}!,</span><br>
           <span class="greeting-message"> your sibling has sent you a special digital rakhi to celebrate the bond you share.</span>
         `;
 
         document.getElementById('greeting-overlay').innerHTML = `
-          <span class="greeting-title">HEY!</span><br>
-          <span class="greeting-message">${rakhiData.brotherName}, your sibling has sent you a special digital rakhi to celebrate the bond you share.</span>
+          <span class="greeting-title">HEY</span><br>
+          <span class="greeting-message">${rakhiData.brotherName}!, your sibling has sent you a special digital rakhi to celebrate the bond you share.</span>
         `;
 
         receiverContainer.addEventListener('click', () => handleTap(receiverContainer, cameraContainer, rakhiData));
