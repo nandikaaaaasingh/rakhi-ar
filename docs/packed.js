@@ -56634,6 +56634,7 @@ function drawVideoToCanvas(videoElement, canvas) {
   requestAnimationFrame(drawFrame);
 }
 
+
 function captureScreenshot(canvas) {
   if (!canvas) {
     console.error('Canvas element not found');
@@ -56655,12 +56656,20 @@ function captureScreenshot(canvas) {
         files: [file],
         title: 'Digital Rakhi',
         text: 'Check out this cool digital Rakhi!',
-      }).catch((error) => console.error('Error sharing:', error));
+      }).then(() => {
+        // Redirect to the Thank You page after sharing
+        window.location.href = 'thank-your.html';
+      }).catch((error) => {
+        console.error('Error sharing:', error);
+      });
     } else {
       downloadImage(blob);
+      // Optionally, you can redirect after the download if needed
+      // window.location.href = 'thank-your.html';
     }
   }, 'image/png');
 }
+
 
 function downloadImage(blob) {
   const link = document.createElement('a');
