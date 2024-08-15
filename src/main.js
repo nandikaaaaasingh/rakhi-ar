@@ -25,6 +25,15 @@ const database = getDatabase(app);
 const analytics = getAnalytics(app);
 
 document.addEventListener('DOMContentLoaded', function() {
+
+  const maxMobileWidth = 500;
+
+    if (window.innerWidth > maxMobileWidth) {
+        window.location.href = '/mobile-only.html'; 
+        return; // Stop further execution since this is a non-mobile device
+    }
+
+
   const urlParams = new URLSearchParams(window.location.search);
   const token = urlParams.get('token');
 
@@ -82,7 +91,7 @@ function setupForm() {
         await handleSharing(uniqueLink);
 
         // Redirect to the thank you page after sharing
-        window.location.href = 'thank-you.html';
+        window.location.href = 'thank-your.html';
       } catch (error) {
         console.error('Error saving data or generating link:', error);
         alert('Failed to process your request. Please try again.');
@@ -176,7 +185,7 @@ async function handleSharing(link) {
     alert('Failed to share or copy link. Please try manually.');
   } finally {
     // Redirect to the thank you page regardless of the share outcome
-    window.location.href = `thank-you.html`;
+    window.location.href = `thank-your.html`;
   }
 }
 
@@ -299,5 +308,5 @@ function downloadImage(blob) {
   // Add a delay to ensure the download is initiated before redirecting
   setTimeout(() => {
     window.location.href = 'thank-your.html'; // Redirect to the Thank You page
-  }, 1000); // 1-second delay, adjust if needed
+  }, 3000); // 1-second delay, adjust if needed
 }
