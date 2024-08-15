@@ -206,9 +206,9 @@ async function startCameraKit(rakhiData) {
     const lens = await cameraKit.lensRepository.loadLens('d5d8d026-effa-4d97-8147-64b6c6b1435e', 'fdd0879f-c570-490e-9dfc-cba0f122699f');
     await session.applyLens(lens, {
       launchParams: {
-        greeting_text: `Hey! ${rakhiData.brotherName}`,
+        greeting_text: `Hey ${rakhiData.brotherName}!`,
         brother_name: `${rakhiData.brotherName}`,
-        message: "Your sibling has sent you a special digital rakhi to celebrate the bond you share."
+        message: "Share this moment with your sibling and spread the joy!"
       }
     });
 
