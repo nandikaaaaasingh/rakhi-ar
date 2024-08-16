@@ -56528,12 +56528,14 @@ function generateRandomToken() {
   return token;
 }
 
-async function handleSharing(link) {
+async function handleSharing(link, brotherName) {
   try {
+    const message = `Dear ${brotherName},\n\nI'm sending you this digital Rakhi as a symbol of my love. Let’s celebrate the bond that unites us. A promise of lifelong bond – an initiative by Chandak Group.`;
+
     if (navigator.share) {
       await navigator.share({
         title: 'Send Digital Rakhi',
-        text: 'Check out this digital Rakhi I sent you!',
+        text: message,
         url: link
       });
       console.log('Thanks for sharing!');
@@ -56551,6 +56553,7 @@ async function handleSharing(link) {
     window.location.href = `thank-you.html`;
   }
 }
+
 
 async function startCameraKit(rakhiData) {
   const cameraContainer = document.getElementById('camera-container');
