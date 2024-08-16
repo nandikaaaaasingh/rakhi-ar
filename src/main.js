@@ -141,6 +141,7 @@ function showReceiverSide(token) {
 
 async function handleTap(receiverContainer, cameraContainer, rakhiData) {
   try {
+    console.log("Passing Brother Name to handleSharing:", rakhiData.brotherName); // Log before passing to handleSharing
     await startCameraKit(rakhiData);
 
     cameraContainer.style.display = 'flex';
@@ -150,11 +151,12 @@ async function handleTap(receiverContainer, cameraContainer, rakhiData) {
       receiverContainer.style.display = 'none';
     }, 1000);
 
+    // Call handleSharing with the correct brotherName
+    await handleSharing(link, rakhiData.brotherName);
   } catch (error) {
     console.error('Error initializing camera:', error);
   }
 }
-
 
 function generateRandomToken() {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

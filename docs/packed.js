@@ -56504,6 +56504,7 @@ function showReceiverSide(token) {
 
 async function handleTap(receiverContainer, cameraContainer, rakhiData) {
   try {
+    console.log("Passing Brother Name to handleSharing:", rakhiData.brotherName); // Log before passing to handleSharing
     await startCameraKit(rakhiData);
 
     cameraContainer.style.display = 'flex';
@@ -56513,11 +56514,12 @@ async function handleTap(receiverContainer, cameraContainer, rakhiData) {
       receiverContainer.style.display = 'none';
     }, 1000);
 
+    // Call handleSharing with the correct brotherName
+    await handleSharing(link, rakhiData.brotherName);
   } catch (error) {
     console.error('Error initializing camera:', error);
   }
 }
-
 
 function generateRandomToken() {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -56530,6 +56532,11 @@ function generateRandomToken() {
 
 async function handleSharing(link, brotherName) {
   try {
+    if (!brotherName) {
+      console.error("Brother's name is undefined");
+      return; // Exit function if brotherName is not provided
+    }
+    
     const message = `Dear ${brotherName},\n\nI'm sending you this digital Rakhi as a symbol of my love. Let’s celebrate the bond that unites us. A promise of lifelong bond – an initiative by Chandak Group.`;
 
     if (navigator.share) {
@@ -56638,7 +56645,7 @@ function drawVideoToCanvas(videoElement, canvas) {
 }
 
 
-function captureScreenshot(canvas) {
+function captureScreenshot(canvas, sisterName) {
   if (!canvas) {
     console.error('Canvas element not found');
     return;
