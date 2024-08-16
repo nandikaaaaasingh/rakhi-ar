@@ -56654,11 +56654,13 @@ function captureScreenshot(canvas) {
 
     const file = new File([blob], 'digital_rakhi.png', { type: 'image/png' });
 
+    const message = `Dear ${sisterName},\n\nThis Digital Rakhi is truly special! Thank you for sending it and adding even more meaning to our Raksha Bandhan. Here’s to celebrating our lifelong bond – an initiative by Chandak Group.`;
+
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       navigator.share({
         files: [file],
         title: 'Digital Rakhi',
-        text: 'Check out this cool digital Rakhi!',
+        text: message,
       }).then(() => {
         // Redirect to the Thank You page after sharing
         window.location.href = 'thank-your.html';
@@ -56672,7 +56674,6 @@ function captureScreenshot(canvas) {
     }
   }, 'image/png');
 }
-
 
 function downloadImage(blob) {
   const link = document.createElement('a');
