@@ -56504,7 +56504,6 @@ function showReceiverSide(token) {
 
 async function handleTap(receiverContainer, cameraContainer, rakhiData) {
   try {
-    console.log("Passing Brother Name to handleSharing:", rakhiData.brotherName); // Log before passing to handleSharing
     await startCameraKit(rakhiData);
 
     cameraContainer.style.display = 'flex';
@@ -56514,12 +56513,11 @@ async function handleTap(receiverContainer, cameraContainer, rakhiData) {
       receiverContainer.style.display = 'none';
     }, 1000);
 
-    // Call handleSharing with the correct brotherName
-    await handleSharing(link, rakhiData.brotherName);
   } catch (error) {
     console.error('Error initializing camera:', error);
   }
 }
+
 
 function generateRandomToken() {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -56530,19 +56528,12 @@ function generateRandomToken() {
   return token;
 }
 
-async function handleSharing(link, brotherName) {
+async function handleSharing(link) {
   try {
-    if (!brotherName) {
-      console.error("Brother's name is undefined");
-      return; // Exit function if brotherName is not provided
-    }
-    
-    const message = `Dear ${brotherName},\n\nI'm sending you this digital Rakhi as a symbol of my love. Let’s celebrate the bond that unites us. A promise of lifelong bond – an initiative by Chandak Group.`;
-
     if (navigator.share) {
       await navigator.share({
         title: 'Send Digital Rakhi',
-        text: message,
+        text: 'Check out this digital Rakhi I sent you!',
         url: link
       });
       console.log('Thanks for sharing!');
@@ -56560,7 +56551,6 @@ async function handleSharing(link, brotherName) {
     window.location.href = `thank-you.html`;
   }
 }
-
 
 async function startCameraKit(rakhiData) {
   const cameraContainer = document.getElementById('camera-container');
@@ -56645,7 +56635,7 @@ function drawVideoToCanvas(videoElement, canvas) {
 }
 
 
-function captureScreenshot(canvas, sisterName) {
+function captureScreenshot(canvas) {
   if (!canvas) {
     console.error('Canvas element not found');
     return;
@@ -56661,13 +56651,11 @@ function captureScreenshot(canvas, sisterName) {
 
     const file = new File([blob], 'digital_rakhi.png', { type: 'image/png' });
 
-    const message = `Dear ${sisterName},\n\nThis Digital Rakhi is truly special! Thank you for sending it and adding even more meaning to our Raksha Bandhan. Here’s to celebrating our lifelong bond – an initiative by Chandak Group.`;
-
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       navigator.share({
         files: [file],
         title: 'Digital Rakhi',
-        text: message,
+        text: 'Check out this cool digital Rakhi!',
       }).then(() => {
         // Redirect to the Thank You page after sharing
         window.location.href = 'thank-your.html';
@@ -56681,6 +56669,7 @@ function captureScreenshot(canvas, sisterName) {
     }
   }, 'image/png');
 }
+
 
 function downloadImage(blob) {
   const link = document.createElement('a');
