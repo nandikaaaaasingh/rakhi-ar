@@ -91,7 +91,7 @@ function setupForm() {
         await handleSharing(uniqueLink);
 
         // Redirect to the thank you page after sharing
-        window.location.href = 'thank-your.html';
+        window.location.href = 'thank-you.html';
       } catch (error) {
         console.error('Error saving data or generating link:', error);
         alert('Failed to process your request. Please try again.');
@@ -185,7 +185,7 @@ async function handleSharing(link) {
     alert('Failed to share or copy link. Please try manually.');
   } finally {
     // Redirect to the thank you page regardless of the share outcome
-    window.location.href = `thank-your.html`;
+    window.location.href = `thank-you.html`;
   }
 }
 
@@ -208,7 +208,7 @@ async function startCameraKit(rakhiData) {
       launchParams: {
         greeting_text: `Hey ${rakhiData.brotherName}!`,
         brother_name: `${rakhiData.brotherName}`,
-        message: "Share this moment with your sibling and spread the joy!"
+        message: "Share this moment with your sibling on social media!"
       }
     });
 
