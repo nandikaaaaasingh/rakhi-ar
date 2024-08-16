@@ -112,7 +112,7 @@ input[type="tel"] {
 
 /* Style for scaling the checkbox */
 input[type="checkbox"] {
-  transform: scale(1);
+  transform: scale(1.2);
   margin-right: 5px;
   vertical-align: middle;
 }
