@@ -167,27 +167,36 @@ function generateRandomToken() {
 
 async function handleSharing(link) {
   try {
+    const message = `Dear ${rakhiData.brotherName},\n\nI'm sending you this digital Rakhi as a symbol of my love. Let’s celebrate the bond that unites us. A promise of lifelong bond – an initiative by Chandak Group.`;
+
     if (navigator.share) {
+      // Log before attempting to share
+      console.log('Attempting to share:', { title: 'Send Digital Rakhi', text: message, url: link });
+
       await navigator.share({
         title: 'Send Digital Rakhi',
-        text: `Dear ${rakhiData.brotherName},\n\nI'm sending you this digital Rakhi as a symbol of my love. Let’s celebrate the bond that unites us. A promise of lifelong bond – an initiative by Chandak Group.`,
+        text: message,
         url: link
       });
       console.log('Thanks for sharing!');
     } else {
       // Fallback for browsers that do not support the share API
-      await navigator.clipboard.writeText(link);
+      console.log('Navigator share not supported, attempting to copy link.');
+      
+      await navigator.clipboard.writeText(`${message}\n\nLink: ${link}`);
       alert('Link copied to clipboard! Please share manually.');
       console.log('Link copied to clipboard!');
     }
   } catch (err) {
-    console.error('Error sharing or copying link:', err);
+    // Log specific error messages
+    console.error('Error during sharing or copying:', err);
     alert('Failed to share or copy link. Please try manually.');
   } finally {
     // Redirect to the thank you page regardless of the share outcome
-    window.location.href = `thank-you.html`;
+    window.location.href = 'thank-you.html';
   }
 }
+
 
 async function startCameraKit(rakhiData) {
   const cameraContainer = document.getElementById('camera-container');
