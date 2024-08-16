@@ -167,6 +167,11 @@ function generateRandomToken() {
 
 async function handleSharing(link, brotherName) {
   try {
+    if (!brotherName) {
+      console.error("Brother's name is undefined");
+      return; // Exit function if brotherName is not provided
+    }
+    
     const message = `Dear ${brotherName},\n\nI'm sending you this digital Rakhi as a symbol of my love. Let’s celebrate the bond that unites us. A promise of lifelong bond – an initiative by Chandak Group.`;
 
     if (navigator.share) {
@@ -275,7 +280,7 @@ function drawVideoToCanvas(videoElement, canvas) {
 }
 
 
-function captureScreenshot(canvas) {
+function captureScreenshot(canvas, sisterName) {
   if (!canvas) {
     console.error('Canvas element not found');
     return;
