@@ -170,7 +170,7 @@ async function handleSharing(link) {
     if (navigator.share) {
       await navigator.share({
         title: 'Send Digital Rakhi',
-        text: 'Check out this digital Rakhi I sent you!',
+        text: `Dear ${rakhiData.brotherName},\n\nI'm sending you this digital Rakhi as a symbol of my love. Let’s celebrate the bond that unites us. A promise of lifelong bond – an initiative by Chandak Group.`,
         url: link
       });
       console.log('Thanks for sharing!');
