@@ -56530,7 +56530,7 @@ function generateRandomToken() {
 
 async function handleSharing(link) {
   try {
-    const message = `Dear ${rakhiData.brotherName},\n\nI'm sending you this digital Rakhi as a symbol of my love. Let’s celebrate the bond that unites us. A promise of lifelong bond – an initiative by Chandak Group.`;
+    const message = `Dear ${rakhiData.brotherName},I'm sending you this digital Rakhi as a symbol of my love. Let’s celebrate the bond that unites us. A promise of lifelong bond – an initiative by Chandak Group.`;
 
     if (navigator.share) {
       // Log before attempting to share
