@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Only</title>
+    <style>
+        /* Make sure the page fills the entire viewport */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden; /* Prevent scrolling */
+        }
+
+        /* The container for the background image */
+        .background-image {
+            background: url('images/desktop.png') no-repeat center center; /* Replace with your image file name */
+            background-size: cover; /* Ensure the image covers the entire screen */
+            height: 100%;
+            width: 100%;
+            background-position: center +2%; /* Shift the image upwards by 20px */
+
+        }
+    </style>
+</head>
+<body>
+    <div class="background-image"></div>
+</body>
+</html>

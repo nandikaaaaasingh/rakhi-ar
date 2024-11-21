@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" href="Images/fav.png" type="image/png">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>RakhiAR Experience</title>
+
+   <!-- Open Graph meta tags -->
+   <meta property="og:image" content="https://github.com/adibkn1/RakhiARActivation/blob/main/docs/Images/thumb.jpg?raw=true" />
+
+   <!-- Twitter Card meta tags -->
+   <meta name="twitter:card" content="summary_large_image" />
+   <meta name="twitter:image" content="https://github.com/adibkn1/RakhiARActivation/blob/main/docs/Images/thumb.jpg?raw=true" />
+
+
+  <link href="index.css" rel="stylesheet">
+  <script defer src="./packed.js"></script>
+</head>
+<body>
+  <div class="container sender-container" id="senderContainer">
+    <img src="Images/logo.png" alt="Logo" class="logo">
+
+    <form id="rakhiForm" class="form-group">
+      <div class="input-wrapper">
+        <input id="sisterName" type="text" placeholder="Your Name" required>
+      </div>
+      <div class="input-wrapper">
+        <input id="brotherName" type="text" placeholder="Sibling's Name" required>
+      </div>
+      <div class="input-wrapper">
+        <label>
+          <input id="terms" type="checkbox" required>
+          <a href="tnc.html">Accept terms and conditions</a>.
+        </label>
+      </div>
+      <div class="button-wrapper">
+        <button type="submit" class="submit-button">Send</button>
+      </div>
+    </form>
+    <div class="security-message">
+      Your information is secure and confidential with us.
+  </div>
+  </div>
+
+  <!-- Receiver's Container -->
+  <div class="container receiver-container" id="receiverContainer" style="display: none;">
+    <img src="Images/logo.png" alt="Logo" class="logo">
+
+    <div class="message" id="receiverMessage">
+      <h1 id="greeting">Loading...</h1 >
+    </div>
+  </div>
+
+  <!-- Camera Container -->
+  <div id="camera-container" style="display: none;">
+    <img src="Images/Powered_bysnap.png" alt="Logo" class="slogo">
+    <img id="captureButton" src="Images/capture.png" alt="Capture" class="capture-button">
+    <div class="overlay-message" style="display: none;">
+      <h1 id="greeting-overlay">Loading...</h1 >
+    </div>
+    <canvas id="canvas"></canvas>
+    <video id="video" style="display: none;" autoplay muted playsinline></video>
+  </div>
+  
+  
+  
+</body>
+</html>
