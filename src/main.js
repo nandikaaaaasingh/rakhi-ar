@@ -8,15 +8,26 @@ import {
 } from '@snap/camera-kit';
 
 // Firebase configuration
+// const firebaseConfig = {
+//   apiKey: "AIzaSyAv5H0-jgze_z1dvT8mHFRwusYXAiTSJgw",
+//   authDomain: "digitalrakhi-f8060.firebaseapp.com",
+//   databaseURL: "https://digitalrakhi-f8060-default-rtdb.firebaseio.com",
+//   projectId: "digitalrakhi-f8060",
+//   storageBucket: "digitalrakhi-f8060.appspot.com",
+//   messagingSenderId: "360526523502",
+//   appId: "1:360526523502:web:3e1af0fd17e9bb1ca5ca7f",
+//   measurementId: "G-FPJ5LHJEVS"
+// };
+
 const firebaseConfig = {
-  apiKey: "AIzaSyAv5H0-jgze_z1dvT8mHFRwusYXAiTSJgw",
-  authDomain: "digitalrakhi-f8060.firebaseapp.com",
-  databaseURL: "https://digitalrakhi-f8060-default-rtdb.firebaseio.com",
-  projectId: "digitalrakhi-f8060",
-  storageBucket: "digitalrakhi-f8060.appspot.com",
-  messagingSenderId: "360526523502",
-  appId: "1:360526523502:web:3e1af0fd17e9bb1ca5ca7f",
-  measurementId: "G-FPJ5LHJEVS"
+  apiKey: "AIzaSyAC-DP2RYDI-McBGCOKM-u0wxcy-PPnoK4",
+  authDomain: "fir-7d7e0.firebaseapp.com",
+  databaseURL: "https://fir-7d7e0-default-rtdb.firebaseio.com",
+  projectId: "fir-7d7e0",
+  storageBucket: "fir-7d7e0.firebasestorage.app",
+  messagingSenderId: "27046342061",
+  appId: "1:27046342061:web:90d9050919b217f1b8c524",
+  measurementId: "G-DY0JWSZ4LW"
 };
 
 
@@ -111,7 +122,7 @@ function setupForm() {
         });
 
         const uniqueLink = `${window.location.origin}${window.location.pathname}?token=${token}`;
-        await handleSharing(uniqueLink);
+          await handleSharing(uniqueLink);
 
         // Redirect to the thank you page after sharing
         window.location.href = 'thank-you.html';
@@ -388,6 +399,15 @@ let audioChunks = [];
 let isRecording = false;
 let recordTimeout;
 
+const recordActionRow = document.getElementById('recordActionRow');
+const playPreviewBtn = document.getElementById('playPreviewBtn');
+const cancelRecordBtn = document.getElementById('cancelRecordBtn');
+const saveRecordBtn = document.getElementById('saveRecordBtn');
+const audioPlayerWrapper = document.querySelector('.audio-player-wrapper');
+const reRecordBtn = document.getElementById('reRecordBtn');
+
+let previewAudio = null;
+
 function setMicCircleColor(color) {
   if (micIcon) {
     const circle = micIcon.querySelector('circle');
@@ -451,6 +471,39 @@ function stopRecording() {
   }
 }
 
+function showRecordActionRow(blob) {
+  if (recordButton) recordButton.style.display = 'none';
+  if (audioPlayerWrapper) audioPlayerWrapper.style.display = 'none';
+  if (recordActionRow) recordActionRow.style.display = 'flex';
+  previewAudio = new Audio(URL.createObjectURL(blob));
+}
+
+function hideRecordActionRow() {
+  if (recordActionRow) recordActionRow.style.display = 'none';
+  if (recordButton) recordButton.style.display = 'flex';
+}
+
+function showAudioPlayer() {
+  if (audioPlayerWrapper) audioPlayerWrapper.style.display = 'flex';
+  if (recordButton) recordButton.style.display = 'flex';
+  if (recordActionRow) recordActionRow.style.display = 'none';
+}
+
+function hideAudioPlayer() {
+  if (audioPlayerWrapper) audioPlayerWrapper.style.display = 'none';
+  if (reRecordBtn) reRecordBtn.style.display = 'none';
+  if (speedMenuBtn) speedMenuBtn.style.display = 'none';
+  if (speedMenu) speedMenu.style.display = 'none';
+}
+
+function showAudioPlayerOnly() {
+  if (audioPlayerWrapper) audioPlayerWrapper.style.display = 'flex';
+  if (recordButton) recordButton.style.display = 'none';
+  if (recordActionRow) recordActionRow.style.display = 'none';
+  if (reRecordBtn) reRecordBtn.style.display = 'flex';
+  if (speedMenuBtn) speedMenuBtn.style.display = 'inline-block';
+}
+
 if (recordButton) {
   // Mouse events
   recordButton.addEventListener('mousedown', startRecording);
@@ -493,12 +546,67 @@ function saveAudioBlobToLocal(blob) {
   };
   reader.readAsDataURL(blob);
 }
-// Patch: call this after recording
+// Patch: after recording, show action row
 if (audioPlayback) {
   audioPlayback.addEventListener('loadedmetadata', () => {
     fetch(audioPlayback.src)
       .then(res => res.blob())
-      .then(blob => { saveAudioBlobToLocal(blob); })
+      .then(blob => {
+        showRecordActionRow(blob);
+        // Always update previewAudio to latest
+        previewAudio = new Audio(URL.createObjectURL(blob));
+      })
       .catch(() => {});
+  });
+}
+
+if (playPreviewBtn) {
+  playPreviewBtn.onclick = () => {
+    if (previewAudio) {
+      previewAudio.currentTime = 0;
+      previewAudio.play();
+      showAudioPlayerOnly();
+      if (audioPlayback) audioPlayback.style.display = 'block';
+    }
+  };
+}
+if (cancelRecordBtn) {
+  cancelRecordBtn.onclick = () => {
+    previewAudio = null;
+    hideRecordActionRow();
+    hideAudioPlayer();
+    if (audioPlayback) {
+      audioPlayback.src = '';
+      audioPlayback.style.display = 'none';
+    }
+    if (recordButton) recordButton.style.display = 'flex';
+  };
+}
+if (saveRecordBtn) {
+  saveRecordBtn.onclick = () => {
+    showAudioPlayerOnly();
+    if (audioPlayback) audioPlayback.style.display = 'block';
+  };
+}
+if (reRecordBtn) {
+  reRecordBtn.onclick = () => {
+    hideAudioPlayer();
+    if (recordButton) recordButton.style.display = 'flex';
+    if (audioPlayback) {
+      audioPlayback.src = '';
+      audioPlayback.style.display = 'none';
+    }
+    previewAudio = null;
+  };
+}
+// When starting a new recording, hide audio player and action row
+if (recordButton) {
+  recordButton.addEventListener('mousedown', () => {
+    hideAudioPlayer();
+    hideRecordActionRow();
+  });
+  recordButton.addEventListener('touchstart', () => {
+    hideAudioPlayer();
+    hideRecordActionRow();
   });
 }
