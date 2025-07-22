@@ -1,21 +1,33 @@
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, set, push, onValue } from 'firebase/database';
 import { getAnalytics, logEvent } from 'firebase/analytics';
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import {
   bootstrapCameraKit,
   createMediaStreamSource,
 } from '@snap/camera-kit';
 
 // Firebase configuration
+// const firebaseConfig = {
+//   apiKey: "AIzaSyAv5H0-jgze_z1dvT8mHFRwusYXAiTSJgw",
+//   authDomain: "digitalrakhi-f8060.firebaseapp.com",
+//   databaseURL: "https://digitalrakhi-f8060-default-rtdb.firebaseio.com",
+//   projectId: "digitalrakhi-f8060",
+//   storageBucket: "digitalrakhi-f8060.appspot.com",
+//   messagingSenderId: "360526523502",
+//   appId: "1:360526523502:web:3e1af0fd17e9bb1ca5ca7f",
+//   measurementId: "G-FPJ5LHJEVS"
+// };
+
 const firebaseConfig = {
-  apiKey: "AIzaSyAv5H0-jgze_z1dvT8mHFRwusYXAiTSJgw",
-  authDomain: "digitalrakhi-f8060.firebaseapp.com",
-  databaseURL: "https://digitalrakhi-f8060-default-rtdb.firebaseio.com",
-  projectId: "digitalrakhi-f8060",
-  storageBucket: "digitalrakhi-f8060.appspot.com",
-  messagingSenderId: "360526523502",
-  appId: "1:360526523502:web:3e1af0fd17e9bb1ca5ca7f",
-  measurementId: "G-FPJ5LHJEVS"
+  apiKey: "AIzaSyAC-DP2RYDI-McBGCOKM-u0wxcy-PPnoK4",
+  authDomain: "fir-7d7e0.firebaseapp.com",
+  databaseURL: "https://fir-7d7e0-default-rtdb.firebaseio.com",
+  projectId: "fir-7d7e0",
+  storageBucket: "fir-7d7e0.firebasestorage.app",
+  messagingSenderId: "27046342061",
+  appId: "1:27046342061:web:90d9050919b217f1b8c524",
+  measurementId: "G-DY0JWSZ4LW"
 };
 
 
@@ -23,6 +35,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const analytics = getAnalytics(app);
+const storage = getStorage(app);
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -62,6 +75,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function setupForm() {
   const form = document.getElementById('rakhiForm');
+  let lastAudioBlob = null;
+  // Patch: capture audio blob after recording
+  const audioPlayback = document.getElementById('audioPlayback');
+  if (audioPlayback) {
+    audioPlayback.addEventListener('loadedmetadata', () => {
+      // Try to fetch the blob from the audio src if possible
+      fetch(audioPlayback.src)
+        .then(res => res.blob())
+        .then(blob => { lastAudioBlob = blob; })
+        .catch(() => { lastAudioBlob = null; });
+    });
+  }
 
   if (form) {
     form.addEventListener('submit', async function(event) {
@@ -77,18 +102,27 @@ function setupForm() {
       }
 
       const token = generateRandomToken();
+      let audioURL = null;
 
       try {
+        // If there is a recording, upload it to Firebase Storage
+        if (lastAudioBlob && lastAudioBlob.size > 0) {
+          const audioStorageRef = storageRef(storage, `recordings/${token}.webm`);
+          await uploadBytes(audioStorageRef, lastAudioBlob);
+          audioURL = await getDownloadURL(audioStorageRef);
+        }
+
         const newPostRef = push(ref(database, 'rakhis'));
         await set(newPostRef, {
           sisterName,
           brotherName,
           token,
+          audioURL: audioURL || null,
           createdAt: new Date().toISOString()
         });
 
         const uniqueLink = `${window.location.origin}${window.location.pathname}?token=${token}`;
-        await handleSharing(uniqueLink);
+          await handleSharing(uniqueLink);
 
         // Redirect to the thank you page after sharing
         window.location.href = 'thank-you.html';
@@ -104,9 +138,31 @@ function showReceiverSide(token) {
   const senderContainer = document.getElementById('senderContainer');
   const receiverContainer = document.getElementById('receiverContainer');
   const cameraContainer = document.getElementById('camera-container');
+  const playVoiceMsg = document.getElementById('playVoiceMsg');
+  const playVoiceBtn = document.getElementById('playVoiceBtn');
+  const playVoiceWrapper = document.getElementById('playVoiceWrapper');
+  let audio = null;
 
   senderContainer.style.display = 'none';
   receiverContainer.style.display = 'flex';
+
+  // Always show play icon and message
+  if (playVoiceWrapper) playVoiceWrapper.style.display = 'flex';
+
+  // Play local audio if available
+  // if (playVoiceBtn) {
+  //   playVoiceBtn.onclick = () => {
+  //     // Try to fetch the last audio blob from localStorage
+  //     const audioDataUrl = localStorage.getItem('lastAudioBlob');
+  //     if (audioDataUrl) {
+  //       if (audio) { audio.pause(); audio.currentTime = 0; }
+  //       audio = new Audio(audioDataUrl);
+  //       audio.play();
+  //     } else {
+  //       alert('No local recording found.');
+  //     }
+  //   };
+  // }
 
   const rakhiRef = ref(database, 'rakhis');
   onValue(rakhiRef, (snapshot) => {
@@ -125,16 +181,28 @@ function showReceiverSide(token) {
           <span class="greeting-message">${rakhiData.brotherName}! your sibling has sent you a special digital rakhi to celebrate the bond you share.</span>
         `;
 
+        // Always show play icon and message
+        if (playVoiceMsg && playVoiceBtn) {
+          playVoiceMsg.style.display = 'block';
+          audio = new Audio(rakhiData.audioURL);
+          playVoiceBtn.onclick = () => {
+            audio.currentTime = 0;
+            audio.play();
+          };
+        }
+
         receiverContainer.addEventListener('click', () => handleTap(receiverContainer, cameraContainer, rakhiData));
       } else {
         document.getElementById('greeting').innerText = 'No Rakhi information found.';
         document.getElementById('greeting-overlay').innerText = 'No Rakhi information found.';
+        if (playVoiceMsg) playVoiceMsg.style.display = 'none';
       }
     }
   }, (error) => {
     console.error('Error fetching data:', error);
     document.getElementById('greeting').innerText = 'Failed to retrieve Rakhi information.';
     document.getElementById('greeting-overlay').innerText = 'Failed to retrieve Rakhi information.';
+    if (playVoiceMsg) playVoiceMsg.style.display = 'none';
   });
 }
 
@@ -318,4 +386,227 @@ function downloadImage(blob) {
   setTimeout(() => {
     window.location.href = 'thank-your.html'; // Redirect to the Thank You page
   }, 3000); // 1-second delay, adjust if needed
+}
+
+// Voice Recording Functionality
+const recordButton = document.getElementById('recordButton');
+const micIcon = document.getElementById('micIcon');
+const audioPlayback = document.getElementById('audioPlayback');
+const speedMenuBtn = document.getElementById('speedMenuBtn');
+const speedMenu = document.getElementById('speedMenu');
+let mediaRecorder;
+let audioChunks = [];
+let isRecording = false;
+let recordTimeout;
+
+const recordActionRow = document.getElementById('recordActionRow');
+const playPreviewBtn = document.getElementById('playPreviewBtn');
+const cancelRecordBtn = document.getElementById('cancelRecordBtn');
+const saveRecordBtn = document.getElementById('saveRecordBtn');
+const audioPlayerWrapper = document.querySelector('.audio-player-wrapper');
+const reRecordBtn = document.getElementById('reRecordBtn');
+
+let previewAudio = null;
+
+function setMicCircleColor(color) {
+  if (micIcon) {
+    const circle = micIcon.querySelector('circle');
+    if (circle) circle.setAttribute('stroke', color);
+  }
+}
+
+function startRecording() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    alert('Your browser does not support audio recording.');
+    return;
+  }
+  recordButton.disabled = true;
+  setTimeout(() => { recordButton.disabled = false; }, 1100); // Prevent double-press
+  navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(stream => {
+      mediaRecorder = new MediaRecorder(stream);
+      audioChunks = [];
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunks.push(e.data);
+      };
+      mediaRecorder.onstop = () => {
+        clearTimeout(recordTimeout);
+        recordButton.disabled = false;
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        const audioUrl = URL.createObjectURL(audioBlob);
+        audioPlayback.src = audioUrl;
+        audioPlayback.style.display = 'block';
+        speedMenuBtn.style.display = 'inline-block';
+        setTimeout(() => {
+          const audioControls = audioPlayback.parentElement;
+          if (audioControls) {
+            const downloadBtn = audioControls.querySelector('a[download]');
+            if (downloadBtn) downloadBtn.style.display = 'none';
+          }
+        }, 100);
+      };
+      mediaRecorder.start();
+      isRecording = true;
+      setMicCircleColor('red');
+      // Stop after 1 minute (60000 ms)
+      recordTimeout = setTimeout(() => {
+        if (isRecording) {
+          stopRecording();
+        }
+      }, 60000);
+    })
+    .catch(() => {
+      alert('Could not access microphone.');
+      recordButton.disabled = false;
+    });
+}
+
+function stopRecording() {
+  if (mediaRecorder && isRecording) {
+    clearTimeout(recordTimeout);
+    mediaRecorder.stop();
+    isRecording = false;
+    setMicCircleColor('#888');
+    recordButton.disabled = false;
+  }
+}
+
+function showRecordActionRow(blob) {
+  if (recordButton) recordButton.style.display = 'none';
+  if (audioPlayerWrapper) audioPlayerWrapper.style.display = 'none';
+  if (recordActionRow) recordActionRow.style.display = 'flex';
+  previewAudio = new Audio(URL.createObjectURL(blob));
+}
+
+function hideRecordActionRow() {
+  if (recordActionRow) recordActionRow.style.display = 'none';
+  if (recordButton) recordButton.style.display = 'flex';
+}
+
+function showAudioPlayer() {
+  if (audioPlayerWrapper) audioPlayerWrapper.style.display = 'flex';
+  if (recordButton) recordButton.style.display = 'flex';
+  if (recordActionRow) recordActionRow.style.display = 'none';
+}
+
+function hideAudioPlayer() {
+  if (audioPlayerWrapper) audioPlayerWrapper.style.display = 'none';
+  if (reRecordBtn) reRecordBtn.style.display = 'none';
+  if (speedMenuBtn) speedMenuBtn.style.display = 'none';
+  if (speedMenu) speedMenu.style.display = 'none';
+}
+
+function showAudioPlayerOnly() {
+  if (audioPlayerWrapper) audioPlayerWrapper.style.display = 'flex';
+  if (recordButton) recordButton.style.display = 'none';
+  if (recordActionRow) recordActionRow.style.display = 'none';
+  if (reRecordBtn) reRecordBtn.style.display = 'flex';
+  if (speedMenuBtn) speedMenuBtn.style.display = 'inline-block';
+}
+
+if (recordButton) {
+  // Mouse events
+  recordButton.addEventListener('mousedown', startRecording);
+  recordButton.addEventListener('mouseup', stopRecording);
+  recordButton.addEventListener('mouseleave', stopRecording);
+  // Touch events for mobile
+  recordButton.addEventListener('touchstart', (e) => { e.preventDefault(); startRecording(); });
+  recordButton.addEventListener('touchend', (e) => { e.preventDefault(); stopRecording(); });
+}
+
+// Playback speed menu logic
+if (speedMenuBtn && speedMenu && audioPlayback) {
+  speedMenuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    // Position menu below the button
+    const rect = speedMenuBtn.getBoundingClientRect();
+    speedMenu.style.display = 'block';
+    speedMenu.style.left = rect.left + 'px';
+    speedMenu.style.top = (rect.bottom + window.scrollY + 4) + 'px';
+  });
+  // Hide menu on click outside
+  document.addEventListener('click', () => {
+    speedMenu.style.display = 'none';
+  });
+  speedMenu.addEventListener('click', (e) => {
+    if (e.target.classList.contains('speed-option')) {
+      const speed = parseFloat(e.target.getAttribute('data-speed'));
+      audioPlayback.playbackRate = speed;
+      speedMenu.style.display = 'none';
+    }
+  });
+}
+
+// Save the audio blob as a data URL in localStorage after recording
+function saveAudioBlobToLocal(blob) {
+  if (!blob) return;
+  const reader = new FileReader();
+  reader.onloadend = function() {
+    localStorage.setItem('lastAudioBlob', reader.result);
+  };
+  reader.readAsDataURL(blob);
+}
+// Patch: after recording, show action row
+if (audioPlayback) {
+  audioPlayback.addEventListener('loadedmetadata', () => {
+    fetch(audioPlayback.src)
+      .then(res => res.blob())
+      .then(blob => {
+        showRecordActionRow(blob);
+        // Always update previewAudio to latest
+        previewAudio = new Audio(URL.createObjectURL(blob));
+      })
+      .catch(() => {});
+  });
+}
+
+if (playPreviewBtn) {
+  playPreviewBtn.onclick = () => {
+    if (previewAudio) {
+      previewAudio.currentTime = 0;
+      previewAudio.play();
+      showAudioPlayerOnly();
+      if (audioPlayback) audioPlayback.style.display = 'block';
+    }
+  };
+}
+if (cancelRecordBtn) {
+  cancelRecordBtn.onclick = () => {
+    previewAudio = null;
+    hideRecordActionRow();
+    hideAudioPlayer();
+    if (audioPlayback) {
+      audioPlayback.src = '';
+      audioPlayback.style.display = 'none';
+    }
+    if (recordButton) recordButton.style.display = 'flex';
+  };
+}
+if (saveRecordBtn) {
+  saveRecordBtn.onclick = () => {
+    showAudioPlayerOnly();
+    if (audioPlayback) audioPlayback.style.display = 'block';
+  };
+}
+if (reRecordBtn) {
+  reRecordBtn.onclick = () => {
+    hideAudioPlayer();
+    if (recordButton) recordButton.style.display = 'flex';
+    if (audioPlayback) {
+      audioPlayback.src = '';
+      audioPlayback.style.display = 'none';
+    }
+    previewAudio = null;
+  };
+}
+// When starting a new recording, hide audio player and action row
+if (recordButton) {
+  recordButton.addEventListener('mousedown', () => {
+    hideAudioPlayer();
+    hideRecordActionRow();
+  });
+  recordButton.addEventListener('touchstart', () => {
+    hideAudioPlayer();
+    hideRecordActionRow();
+  });
 }
