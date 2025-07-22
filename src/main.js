@@ -95,7 +95,7 @@ function setupForm() {
       const sisterName = document.getElementById('sisterName').value.trim();
       const brotherName = document.getElementById('brotherName').value.trim();
       const termsAccepted = document.getElementById('terms').checked;
-
+console.log('loggin', sisterName, brotherName, termsAccepted)
       if (!sisterName || !brotherName || !termsAccepted) {
         alert('Please fill out all fields and accept the terms.');
         return;

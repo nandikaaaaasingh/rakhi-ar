@@ -25,14 +25,14 @@
 
     <form id="rakhiForm" class="form-group">
       <div class="input-wrapper">
-        <input id="sisterName" type="text" placeholder="Your Name" required>
+        <input id="sisterName" type="text" placeholder="Your Name" required onblur="console.log('Sister name entered:', this.value)">
       </div>
       <div class="input-wrapper">
-        <input id="brotherName" type="text" placeholder="Sibling's Name" required>
+        <input id="brotherName" type="text" placeholder="Sibling's Name" required onblur="console.log('Brother name entered:', this.value)">
       </div>
       <div class="input-wrapper" style="display: flex; flex-direction: column; align-items: center;">
         <div class="audio-controls-fixed" style="height:90px;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-          <button type="button" id="recordButton" class="record-button" title="Record your voice" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.08);background:#fff;margin-bottom:16px;">
+          <button type="button" id="recordButton" class="record-button" title="Record your voice" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.08);background:#fff;margin-bottom:16px;" onclick="console.log('Record button clicked')">
             <svg id="micIcon" width="40" height="40" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="32" cy="32" r="30" stroke="#888" stroke-width="4" fill="#f5f5f5"/>
               <rect x="26" y="16" width="12" height="24" rx="6" fill="#888"/>
@@ -42,7 +42,7 @@
           </button>
           <div class="audio-player-wrapper" style="width:100%;margin-bottom:12px;position:relative;display:none;">
             <button type="button" id="speedMenuBtn" style="display:none;margin-right:12px;background:none;border:none;cursor:pointer;font-size:22px;color:#ff8000;" title="Playback speed options">&#8942;</button>
-            <audio id="audioPlayback" class="audio-player-compact" controls></audio>
+            <audio id="audioPlayback" class="audio-player-compact" controls onplay="console.log('Audio playback started')"></audio>
             <button type="button" id="reRecordBtn" style="display:none;margin-left:12px;background:#fff;border:2px solid #ff8000;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#ff8000;box-shadow:0 2px 8px rgba(255,128,0,0.10);cursor:pointer;">
               <span class="material-icons">mic</span>
             </button>
@@ -73,7 +73,7 @@
         </label>
       </div>
       <div class="button-wrapper">
-        <button type="submit" class="submit-button">Send</button>
+        <button type="submit" class="submit-button" onclick="console.log('Send button clicked')">Send</button>
       </div>
     </form>
     <div class="security-message">
