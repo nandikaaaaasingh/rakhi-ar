@@ -389,224 +389,139 @@ function downloadImage(blob) {
 }
 
 // Voice Recording Functionality
-const recordButton = document.getElementById('recordButton');
-const micIcon = document.getElementById('micIcon');
-const audioPlayback = document.getElementById('audioPlayback');
-const speedMenuBtn = document.getElementById('speedMenuBtn');
-const speedMenu = document.getElementById('speedMenu');
-let mediaRecorder;
+// --- Voice Recorder UI Elements ---
+const holdRecordBtn = document.getElementById('holdRecordBtn');
+const recordProgressBar = document.getElementById('recordProgressBar');
+const recordProgress = document.getElementById('recordProgress');
+const recordTimer = document.getElementById('recordTimer');
+const afterRecordBtns = document.getElementById('afterRecordBtns');
+const playRecordingBtn = document.getElementById('playRecordingBtn');
+const cancelRecordingBtn = document.getElementById('cancelRecordingBtn');
+let mediaRecorder = null;
 let audioChunks = [];
-let isRecording = false;
-let recordTimeout;
+let recordStartTime = null;
+let recordTimerInterval = null;
+let recordedAudioBlob = null;
+let recordedAudioUrl = null;
+let audioPlayer = null;
 
-const recordActionRow = document.getElementById('recordActionRow');
-const playPreviewBtn = document.getElementById('playPreviewBtn');
-const cancelRecordBtn = document.getElementById('cancelRecordBtn');
-const saveRecordBtn = document.getElementById('saveRecordBtn');
-const audioPlayerWrapper = document.querySelector('.audio-player-wrapper');
-const reRecordBtn = document.getElementById('reRecordBtn');
-
-let previewAudio = null;
-
-function setMicCircleColor(color) {
-  if (micIcon) {
-    const circle = micIcon.querySelector('circle');
-    if (circle) circle.setAttribute('stroke', color);
+function resetVoiceRecorderUI() {
+  holdRecordBtn.style.display = 'flex';
+  recordProgressBar.style.display = 'none';
+  recordTimer.style.display = 'none';
+  afterRecordBtns.style.display = 'none';
+  recordProgress.style.width = '0';
+  recordTimer.textContent = '0:00';
+  recordedAudioBlob = null;
+  recordedAudioUrl = null;
+  if (audioPlayer) {
+    audioPlayer.pause();
+    audioPlayer = null;
   }
 }
 
-function startRecording() {
+function updateRecordTimerAndProgress() {
+  const elapsed = (Date.now() - recordStartTime) / 1000;
+  const maxDuration = 20;
+  recordTimer.textContent = `0:${elapsed < 10 ? '0' : ''}${Math.floor(elapsed)}`;
+  recordProgress.style.width = `${Math.min(100, (elapsed / maxDuration) * 100)}%`;
+  if (elapsed >= maxDuration) {
+    stopVoiceRecording();
+  }
+}
+
+function startVoiceRecording() {
+  console.log('Voice recording started');
+  audioChunks = [];
+  recordStartTime = Date.now();
+  recordProgressBar.style.display = 'block';
+  recordTimer.style.display = 'block';
+  holdRecordBtn.style.display = 'none';
+  afterRecordBtns.style.display = 'none';
+  recordProgress.style.width = '0';
+  recordTimer.textContent = '0:00';
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     alert('Your browser does not support audio recording.');
+    console.error('MediaDevices or getUserMedia not supported');
+    resetVoiceRecorderUI();
     return;
   }
-  recordButton.disabled = true;
-  setTimeout(() => { recordButton.disabled = false; }, 1100); // Prevent double-press
   navigator.mediaDevices.getUserMedia({ audio: true })
     .then(stream => {
       mediaRecorder = new MediaRecorder(stream);
-      audioChunks = [];
       mediaRecorder.ondataavailable = (e) => {
         if (e.data.size > 0) audioChunks.push(e.data);
       };
       mediaRecorder.onstop = () => {
-        clearTimeout(recordTimeout);
-        recordButton.disabled = false;
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        audioPlayback.src = audioUrl;
-        audioPlayback.style.display = 'block';
-        speedMenuBtn.style.display = 'inline-block';
-        setTimeout(() => {
-          const audioControls = audioPlayback.parentElement;
-          if (audioControls) {
-            const downloadBtn = audioControls.querySelector('a[download]');
-            if (downloadBtn) downloadBtn.style.display = 'none';
-          }
-        }, 100);
+        recordedAudioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        recordedAudioUrl = URL.createObjectURL(recordedAudioBlob);
+        console.log('Voice recording stopped, blob created:', recordedAudioBlob);
+        recordProgressBar.style.display = 'none';
+        recordTimer.style.display = 'none';
+        afterRecordBtns.style.display = 'flex';
+      };
+      mediaRecorder.onerror = (err) => {
+        console.error('MediaRecorder error:', err);
+        resetVoiceRecorderUI();
       };
       mediaRecorder.start();
-      isRecording = true;
-      setMicCircleColor('red');
-      // Stop after 1 minute (60000 ms)
-      recordTimeout = setTimeout(() => {
-        if (isRecording) {
-          stopRecording();
-        }
-      }, 60000);
+      recordTimerInterval = setInterval(updateRecordTimerAndProgress, 100);
     })
-    .catch(() => {
+    .catch(err => {
       alert('Could not access microphone.');
-      recordButton.disabled = false;
+      console.error('getUserMedia error:', err);
+      resetVoiceRecorderUI();
     });
 }
 
-function stopRecording() {
-  if (mediaRecorder && isRecording) {
-    clearTimeout(recordTimeout);
+function stopVoiceRecording() {
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
     mediaRecorder.stop();
-    isRecording = false;
-    setMicCircleColor('#888');
-    recordButton.disabled = false;
+    clearInterval(recordTimerInterval);
+    console.log('Voice recording manually stopped');
   }
 }
 
-function showRecordActionRow(blob) {
-  if (recordButton) recordButton.style.display = 'none';
-  if (audioPlayerWrapper) audioPlayerWrapper.style.display = 'none';
-  if (recordActionRow) recordActionRow.style.display = 'flex';
-  previewAudio = new Audio(URL.createObjectURL(blob));
-}
-
-function hideRecordActionRow() {
-  if (recordActionRow) recordActionRow.style.display = 'none';
-  if (recordButton) recordButton.style.display = 'flex';
-}
-
-function showAudioPlayer() {
-  if (audioPlayerWrapper) audioPlayerWrapper.style.display = 'flex';
-  if (recordButton) recordButton.style.display = 'flex';
-  if (recordActionRow) recordActionRow.style.display = 'none';
-}
-
-function hideAudioPlayer() {
-  if (audioPlayerWrapper) audioPlayerWrapper.style.display = 'none';
-  if (reRecordBtn) reRecordBtn.style.display = 'none';
-  if (speedMenuBtn) speedMenuBtn.style.display = 'none';
-  if (speedMenu) speedMenu.style.display = 'none';
-}
-
-function showAudioPlayerOnly() {
-  if (audioPlayerWrapper) audioPlayerWrapper.style.display = 'flex';
-  if (recordButton) recordButton.style.display = 'none';
-  if (recordActionRow) recordActionRow.style.display = 'none';
-  if (reRecordBtn) reRecordBtn.style.display = 'flex';
-  if (speedMenuBtn) speedMenuBtn.style.display = 'inline-block';
-}
-
-if (recordButton) {
-  // Mouse events
-  recordButton.addEventListener('mousedown', startRecording);
-  recordButton.addEventListener('mouseup', stopRecording);
-  recordButton.addEventListener('mouseleave', stopRecording);
-  // Touch events for mobile
-  recordButton.addEventListener('touchstart', (e) => { e.preventDefault(); startRecording(); });
-  recordButton.addEventListener('touchend', (e) => { e.preventDefault(); stopRecording(); });
-}
-
-// Playback speed menu logic
-if (speedMenuBtn && speedMenu && audioPlayback) {
-  speedMenuBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    // Position menu below the button
-    const rect = speedMenuBtn.getBoundingClientRect();
-    speedMenu.style.display = 'block';
-    speedMenu.style.left = rect.left + 'px';
-    speedMenu.style.top = (rect.bottom + window.scrollY + 4) + 'px';
+if (holdRecordBtn) {
+  let isHolding = false;
+  holdRecordBtn.addEventListener('mousedown', () => {
+    isHolding = true;
+    startVoiceRecording();
   });
-  // Hide menu on click outside
-  document.addEventListener('click', () => {
-    speedMenu.style.display = 'none';
+  holdRecordBtn.addEventListener('touchstart', (e) => {
+    isHolding = true;
+    startVoiceRecording();
+    e.preventDefault();
   });
-  speedMenu.addEventListener('click', (e) => {
-    if (e.target.classList.contains('speed-option')) {
-      const speed = parseFloat(e.target.getAttribute('data-speed'));
-      audioPlayback.playbackRate = speed;
-      speedMenu.style.display = 'none';
+  document.addEventListener('mouseup', () => {
+    if (isHolding) {
+      stopVoiceRecording();
+      isHolding = false;
+    }
+  });
+  document.addEventListener('touchend', () => {
+    if (isHolding) {
+      stopVoiceRecording();
+      isHolding = false;
     }
   });
 }
 
-// Save the audio blob as a data URL in localStorage after recording
-function saveAudioBlobToLocal(blob) {
-  if (!blob) return;
-  const reader = new FileReader();
-  reader.onloadend = function() {
-    localStorage.setItem('lastAudioBlob', reader.result);
-  };
-  reader.readAsDataURL(blob);
-}
-// Patch: after recording, show action row
-if (audioPlayback) {
-  audioPlayback.addEventListener('loadedmetadata', () => {
-    fetch(audioPlayback.src)
-      .then(res => res.blob())
-      .then(blob => {
-        showRecordActionRow(blob);
-        // Always update previewAudio to latest
-        previewAudio = new Audio(URL.createObjectURL(blob));
-      })
-      .catch(() => {});
+if (playRecordingBtn) {
+  playRecordingBtn.addEventListener('click', () => {
+    if (recordedAudioUrl) {
+      if (audioPlayer) {
+        audioPlayer.pause();
+      }
+      audioPlayer = new Audio(recordedAudioUrl);
+      audioPlayer.play();
+      console.log('Playing recorded audio');
+    }
   });
 }
-
-if (playPreviewBtn) {
-  playPreviewBtn.onclick = () => {
-    if (previewAudio) {
-      previewAudio.currentTime = 0;
-      previewAudio.play();
-      showAudioPlayerOnly();
-      if (audioPlayback) audioPlayback.style.display = 'block';
-    }
-  };
-}
-if (cancelRecordBtn) {
-  cancelRecordBtn.onclick = () => {
-    previewAudio = null;
-    hideRecordActionRow();
-    hideAudioPlayer();
-    if (audioPlayback) {
-      audioPlayback.src = '';
-      audioPlayback.style.display = 'none';
-    }
-    if (recordButton) recordButton.style.display = 'flex';
-  };
-}
-if (saveRecordBtn) {
-  saveRecordBtn.onclick = () => {
-    showAudioPlayerOnly();
-    if (audioPlayback) audioPlayback.style.display = 'block';
-  };
-}
-if (reRecordBtn) {
-  reRecordBtn.onclick = () => {
-    hideAudioPlayer();
-    if (recordButton) recordButton.style.display = 'flex';
-    if (audioPlayback) {
-      audioPlayback.src = '';
-      audioPlayback.style.display = 'none';
-    }
-    previewAudio = null;
-  };
-}
-// When starting a new recording, hide audio player and action row
-if (recordButton) {
-  recordButton.addEventListener('mousedown', () => {
-    hideAudioPlayer();
-    hideRecordActionRow();
-  });
-  recordButton.addEventListener('touchstart', () => {
-    hideAudioPlayer();
-    hideRecordActionRow();
+if (cancelRecordingBtn) {
+  cancelRecordingBtn.addEventListener('click', () => {
+    resetVoiceRecorderUI();
+    console.log('Recording cancelled and UI reset');
   });
 }
