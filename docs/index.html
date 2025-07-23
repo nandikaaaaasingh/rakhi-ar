@@ -31,39 +31,27 @@
         <input id="brotherName" type="text" placeholder="Sibling's Name" required onblur="console.log('Brother name entered:', this.value)">
       </div>
       <div class="input-wrapper" style="display: flex; flex-direction: column; align-items: center;">
-        <div class="audio-controls-fixed" style="height:90px;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-          <button type="button" id="recordButton" class="record-button" title="Record your voice" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.08);background:#fff;margin-bottom:16px;" onclick="console.log('Record button clicked')">
-            <svg id="micIcon" width="40" height="40" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <div id="voiceRecorderUI" style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;">
+          <button type="button" id="holdRecordBtn" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.08);background:#fff;margin-bottom:16px;">
+            <svg width="40" height="40" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="32" cy="32" r="30" stroke="#888" stroke-width="4" fill="#f5f5f5"/>
               <rect x="26" y="16" width="12" height="24" rx="6" fill="#888"/>
               <rect x="30" y="40" width="4" height="10" rx="2" fill="#888"/>
               <path d="M20 32a12 12 0 0 0 24 0" stroke="#888" stroke-width="3" fill="none"/>
             </svg>
           </button>
-          <div class="audio-player-wrapper" style="width:100%;margin-bottom:12px;position:relative;display:none;">
-            <button type="button" id="speedMenuBtn" style="display:none;margin-right:12px;background:none;border:none;cursor:pointer;font-size:22px;color:#ff8000;" title="Playback speed options">&#8942;</button>
-            <audio id="audioPlayback" class="audio-player-compact" controls onplay="console.log('Audio playback started')"></audio>
-            <button type="button" id="reRecordBtn" style="display:none;margin-left:12px;background:#fff;border:2px solid #ff8000;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#ff8000;box-shadow:0 2px 8px rgba(255,128,0,0.10);cursor:pointer;">
-              <span class="material-icons">mic</span>
-            </button>
+          <div id="recordProgressBar" style="width:80%;height:8px;background:#eee;border-radius:4px;margin:8px 0;display:none;">
+            <div id="recordProgress" style="height:100%;width:0;background:#ff8000;border-radius:4px;"></div>
           </div>
-          <div id="recordActionRow" style="display:none;flex-direction:row;justify-content:center;align-items:center;gap:18px;margin-bottom:16px;width:100%;">
-            <button type="button" id="playPreviewBtn" style="background:#fff;border:2px solid #ff8000;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#ff8000;box-shadow:0 2px 8px rgba(255,128,0,0.10);cursor:pointer;">
+          <div id="recordTimer" style="font-size:1.1em;color:#ff8000;margin-bottom:8px;display:none;">0:00</div>
+          <div id="afterRecordBtns" style="display:none;flex-direction:row;gap:18px;justify-content:center;align-items:center;">
+            <button type="button" id="playRecordingBtn" style="background:#fff;border:2px solid #ff8000;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#ff8000;box-shadow:0 2px 8px rgba(255,128,0,0.10);cursor:pointer;">
               <span class="material-icons">play_arrow</span>
             </button>
-            <button type="button" id="cancelRecordBtn" style="background:#fff;border:2px solid #888;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#888;box-shadow:0 2px 8px rgba(0,0,0,0.08);cursor:pointer;">
+            <button type="button" id="cancelRecordingBtn" style="background:#fff;border:2px solid #888;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#888;box-shadow:0 2px 8px rgba(0,0,0,0.08);cursor:pointer;">
               <span class="material-icons">close</span>
             </button>
-            <button type="button" id="saveRecordBtn" style="background:#ff8000;border:none;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;box-shadow:0 2px 8px rgba(255,128,0,0.10);cursor:pointer;">
-              <span class="material-icons">check</span>
-            </button>
           </div>
-        </div>
-        <div id="speedMenu" class="speed-menu" style="display:none;position:absolute;background:#fff;border:1px solid #ccc;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.15);padding:8px 0;z-index:10;">
-          <div class="speed-option" data-speed="0.5" style="padding:6px 24px;cursor:pointer;">0.5x</div>
-          <div class="speed-option" data-speed="1" style="padding:6px 24px;cursor:pointer;">1x</div>
-          <div class="speed-option" data-speed="1.5" style="padding:6px 24px;cursor:pointer;">1.5x</div>
-          <div class="speed-option" data-speed="2" style="padding:6px 24px;cursor:pointer;">2x</div>
         </div>
       </div>
       <div class="input-wrapper">
