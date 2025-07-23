@@ -416,18 +416,28 @@ function setMicCircleColor(color) {
 }
 
 function startRecording() {
+  console.log('startRecording called');
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    console.error('Your browser does not support audio recording.');
     alert('Your browser does not support audio recording.');
     return;
   }
   recordButton.disabled = true;
   setTimeout(() => { recordButton.disabled = false; }, 1100); // Prevent double-press
+  console.log('Requesting microphone access...');
   navigator.mediaDevices.getUserMedia({ audio: true })
     .then(stream => {
+      console.log('Microphone access granted. Creating MediaRecorder...');
       mediaRecorder = new MediaRecorder(stream);
       audioChunks = [];
       mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) audioChunks.push(e.data);
+        if (e.data.size > 0) {
+          audioChunks.push(e.data);
+          console.log('Audio data available:', e.data);
+        }
+      };
+      mediaRecorder.onstart = () => {
+        console.log('MediaRecorder started');
       };
       mediaRecorder.onstop = () => {
         clearTimeout(recordTimeout);
@@ -444,18 +454,21 @@ function startRecording() {
             if (downloadBtn) downloadBtn.style.display = 'none';
           }
         }, 100);
+        console.log('MediaRecorder stopped, audio blob created:', audioBlob);
+      };
+      mediaRecorder.onerror = (err) => {
+        console.error('MediaRecorder error:', err);
       };
       mediaRecorder.start();
       isRecording = true;
-      setMicCircleColor('red');
-      // Stop after 1 minute (60000 ms)
       recordTimeout = setTimeout(() => {
         if (isRecording) {
           stopRecording();
         }
       }, 60000);
     })
-    .catch(() => {
+    .catch((err) => {
+      console.error('Could not access microphone.', err);
       alert('Could not access microphone.');
       recordButton.disabled = false;
     });
@@ -505,6 +518,10 @@ function showAudioPlayerOnly() {
 }
 
 if (recordButton) {
+  recordButton.addEventListener('click', () => {
+    console.log('Record button clicked (event listener)');
+    startRecording();
+  });
   // Mouse events
   recordButton.addEventListener('mousedown', startRecording);
   recordButton.addEventListener('mouseup', stopRecording);
